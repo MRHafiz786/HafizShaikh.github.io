@@ -145,6 +145,23 @@
       font-size: 0.8em;
     }
 
+    h3.engine-header {
+      color: var(--secondary);
+      margin-top: 30px;
+      padding: 10px 15px;
+      background: rgba(255, 64, 129, 0.1);
+      border-left: 4px solid var(--secondary);
+      border-radius: 4px;
+    }
+
+    h4.game-type-header {
+      color: #4caf50;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      padding-left: 10px;
+      border-left: 3px solid #4caf50;
+    }
+
     ul {
       line-height: 1.8;
       padding-left: 20px;
@@ -187,6 +204,16 @@
     .project p, .experience p {
       margin-bottom: 0;
       color: rgba(255, 255, 255, 0.8);
+    }
+
+    .project .tech-used {
+      display: inline-block;
+      background: rgba(0, 188, 212, 0.2);
+      color: var(--primary);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.8em;
+      margin-top: 10px;
     }
 
     footer {
@@ -662,37 +689,76 @@
   <section id="projects">
     <h2>Game Development Projects</h2>
 
+    <h3 class="engine-header">Unity Projects</h3>
+    
+    <h4 class="game-type-header">2D Games</h4>
+    
     <div class="project">
-      <h3>Dragon Game - 2D Platformer</h3>
-      <p>Developed a complete 2D platformer game in Unity with character movement, enemy AI, and level progression.</p>
+      <h3>Dragon Game (2D Platformer)</h3>
+      <p>Player controls a dragon character who needs to collect fruits to pass each level. The game features various traps and enemies that must be defeated while collecting fruits to progress and eventually escape each level.</p>
+      <span class="tech-used">Unity 2D</span>
     </div>
+    
     <div class="project">
-      <h3>Wada 1729 - Cinematic Horror Game</h3>
-      <p>Created an immersive horror experience using Unity HDRP with advanced lighting, sound design, and atmospheric elements.</p>
+      <h3>Flappy Bird</h3>
+      <p>Classic endless flier game where pipes continuously spawn and the player must navigate the bird through gaps. Game ends if the bird touches any pipes or the ground.</p>
+      <span class="tech-used">Unity 2D</span>
     </div>
+    
     <div class="project">
-      <h3>Real Car Racing - Timed Racing Game</h3>
-      <p>Built a racing game with realistic gear system, vehicle physics, and time-based challenges in Unity.</p>
+      <h3>Pen and the Pain (2D)</h3>
+      <p>A girl trapped inside a book must escape from words in this fully parkour-based adventure. Players navigate through text-based environments using precise platforming skills.</p>
+      <span class="tech-used">Unity 2D</span>
     </div>
+    
     <div class="project">
-      <h3>Trap Escape - Side-scrolling Action Game</h3>
-      <p>Developed an action-packed side-scroller with trap mechanics and dynamic obstacles using Unreal Engine 5.</p>
+      <h3>Ball Game (2D)</h3>
+      <p>Inspired by classic Redball games, this 2D platformer features a rolling ball character navigating through challenging levels with physics-based movement and obstacles.</p>
+      <span class="tech-used">Unity 2D</span>
     </div>
+    
+    <h4 class="game-type-header">3D Games</h4>
+    
     <div class="project">
-      <h3>Cube Runner - Endless Runner</h3>
-      <p>Created an infinite runner game with procedural generation using HTML, CSS, and JavaScript.</p>
+      <h3>Wada 1729 (3D Horror)</h3>
+      <p>A cinematic horror experience built with Unity HDRP. An explorer becomes too excited to investigate and enters a mysterious wada (mansion), only to become trapped. Players follow the story to uncover secrets and escape the haunted location.</p>
+      <span class="tech-used">Unity HDRP</span>
     </div>
+    
     <div class="project">
-      <h3>Unity AR Bird Spawn</h3>
-      <p>Implemented AR Foundation with plane detection to spawn interactive bird objects in real-world environments.</p>
+      <h3>Car Racing (3D)</h3>
+      <p>Racing game featuring laps, timers, and various traps throughout the track. Players must navigate challenging courses while competing against the clock.</p>
+      <span class="tech-used">Unity 3D</span>
     </div>
+    
     <div class="project">
-      <h3>AR Face Mask & Tracking</h3>
-      <p>Developed real-time face tracking and AR mask application using Unity and Vuforia.</p>
+      <h3>Last Stand: Undead Nightmare (3D)</h3>
+      <p>Survival shooter where players fight against 3 types of enemies using various guns. The objective is to rescue a girl from a locked door, with the key dropped by defeating specific enemies.</p>
+      <span class="tech-used">Unity 3D</span>
     </div>
+    
+    <h3 class="engine-header">Unreal Engine Projects</h3>
+    
     <div class="project">
-      <h3>Unreal Engine Village Environment</h3>
-      <p>Designed and built a detailed village environment with sunset lighting in Unreal Engine.</p>
+      <h3>Trap Escape</h3>
+      <p>Side-scrolling action game with various traps and obstacles built using Unreal Engine 5's advanced physics and rendering capabilities.</p>
+      <span class="tech-used">Unreal Engine 5</span>
+    </div>
+    
+    <h3 class="engine-header">Roblox Projects</h3>
+    
+    <div class="project">
+      <h3>Adventure World</h3>
+      <p>Created an interactive adventure game in Roblox Studio with custom mechanics, environments, and multiplayer functionality.</p>
+      <span class="tech-used">Roblox Studio</span>
+    </div>
+    
+    <h3 class="engine-header">Web Games</h3>
+    
+    <div class="project">
+      <h3>Cube Runner</h3>
+      <p>Endless runner game built with HTML, CSS, and JavaScript featuring procedurally generated obstacles and increasing difficulty.</p>
+      <span class="tech-used">HTML/CSS/JavaScript</span>
     </div>
   </section>
 
@@ -706,6 +772,16 @@
     <div class="project">
       <h3>Car Friends Meetup - Stop Motion Film</h3>
       <p>Produced a cinematic stop-motion film featuring toy car characters in an engaging narrative.</p>
+    </div>
+    <div class="project">
+      <h3>Unity AR Bird Spawn</h3>
+      <p>Implemented AR Foundation with plane detection to spawn interactive bird objects in real-world environments.</p>
+      <span class="tech-used">AR Foundation</span>
+    </div>
+    <div class="project">
+      <h3>AR Face Mask & Tracking</h3>
+      <p>Developed real-time face tracking and AR mask application using Unity and Vuforia.</p>
+      <span class="tech-used">Unity + Vuforia</span>
     </div>
   </section>
 
