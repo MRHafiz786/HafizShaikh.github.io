@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Hafiz Shaikh | Game Developer Portfolio | Unity · Unreal · Roblox</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS (CDN) + custom base layers -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* custom overrides & theme extensions */
+    @layer base {
+      :root {
+        --color-primary: #00bcd4;
+        --color-secondary: #ff4081;
+        --color-accent: #4caf50;
+        --color-dark: #0f0f0f;
+        --color-darker: #050505;
+      }
+      body {
+        background-color: #050505;
+        font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+        color: #d4d4d8;
+        cursor: default;
+        background-image: radial-gradient(circle at 10% 20%, rgba(0, 188, 212, 0.05) 0%, transparent 20%),
+                          radial-gradient(circle at 90% 80%, rgba(255, 64, 129, 0.05) 0%, transparent 20%);
+        background-attachment: fixed;
+      }
+      h1, h2, h3, h4, h5, h6 {
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+      }
+      .font-display {
+        font-family: 'Space Grotesk', sans-serif;
+      }
+      .font-mono {
+        font-family: 'JetBrains Mono', monospace;
+      }
+    }
+    /* custom utility classes (tailwind may not include these by default) */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      border-radius: 1rem;
+    }
+    .tech-tag {
+      display: inline-block;
+      font-size: 0.6rem;
+      padding: 0.2rem 0.6rem;
+      background: rgba(0, 188, 212, 0.1);
+      color: #00bcd4;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 188, 212, 0.3);
+      font-family: 'JetBrains Mono', monospace;
+      margin: 0.25rem;
+    }
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.2;
+      animation: float-orb 20s infinite ease-in-out;
+    }
+    @keyframes float-orb {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(30px, -20px) rotate(120deg); }
+      66% { transform: translate(-20px, 30px) rotate(240deg); }
+    }
+    .scanline {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #00bcd4, transparent);
+      animation: scanline 3s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes scanline {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    .animation-delay-2000 {
+      animation-delay: 2s;
+    }
+    .animation-delay-4000 {
+      animation-delay: 4s;
+    }
+    /* custom cursor follower (mouse follower) */
+    .cursor-follower {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 24px;
+      height: 24px;
+      border: 2px solid rgba(0, 188, 212, 0.6);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      mix-blend-mode: difference;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s ease, height 0.2s ease, border-color 0.2s;
+      will-change: transform;
+    }
+    .cursor-glow {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(0, 188, 212, 0.2) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      transform: translate(-50%, -50%);
+      opacity: 0.3;
+      filter: blur(40px);
+      will-change: transform;
+    }
+    /* Hide default cursor on interactive elements for custom feel */
+    a, button, [role="button"], .tech-tag {
+      cursor: none;
+    }
+    @media (max-width: 768px) {
+      .cursor-follower, .cursor-glow { display: none; }
+      body { cursor: auto; }
+      a, button, [role="button"] { cursor: pointer; }
+    }
+    /* custom list styling */
+    .list-dash li {
+      display: flex;
+      gap: 0.5rem;
+      align-items: baseline;
+    }
+    .list-dash li::before {
+      content: "▶";
+      color: #ff4081;
+      font-size: 0.65rem;
+      opacity: 0.6;
+    }
+  </style>
+</head>
+<body class="antialiased overflow-x-hidden">
+
+  <!-- Animated Orbs & Background Decor -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    <div class="orb w-72 h-72 bg-[#00bcd4] top-[15%] left-[10%]"></div>
+    <div class="orb w-[480px] h-[480px] bg-[#ff4081] top-[45%] -right-[5%] animation-delay-2000"></div>
+    <div class="orb w-96 h-96 bg-[#4caf50] bottom-[10%] left-[20%] animation-delay-4000"></div>
+    
+    <!-- Decorative Icons (SVG) -->
+    <div class="absolute top-[20%] right-[15%] opacity-5 pointer-events-none">
+      <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="#00bcd4" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12h12M12 6v12M3.5 12H2M22 12h-1.5M12 2v1.5M12 20.5V22M5.5 5.5L4 4M19.5 5.5L21 4M5.5 18.5L4 20M19.5 18.5L21 20"/><circle cx="12" cy="12" r="3"/></svg>
+    </div>
+    <div class="absolute top-[60%] left-[5%] opacity-5 pointer-events-none">
+      <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#ff4081" stroke-width="1"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M15 2v2M9 2v2"/></svg>
+    </div>
+    <div class="absolute bottom-[20%] right-[20%] opacity-5 pointer-events-none">
+      <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="#4caf50" stroke-width="1"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-4M9 15h6"/></svg>
+    </div>
+  </div>
+
+  <!-- Cursor elements -->
+  <div class="cursor-glow" id="cursorGlow"></div>
+  <div class="cursor-follower" id="cursorFollower"></div>
+
+  <div class="min-h-screen py-12 px-6 sm:px-12 relative z-10">
+    <div class="max-w-5xl mx-auto glass-card overflow-hidden shadow-2xl relative">
+      <div class="scanline"></div>
+      
+      <!-- Header -->
+      <header class="p-12 border-b-4 border-[#00bcd4] bg-[#050505]/50 relative overflow-hidden">
+        <div class="relative z-10 text-center md:text-left">
+          <h1 class="text-6xl md:text-8xl text-[#00bcd4] uppercase tracking-tighter font-black leading-none drop-shadow-[0_0_30px_rgba(0,188,212,0.4)]">
+            Hafiz <span class="text-white">Shaikh</span>
+          </h1>
+          <p class="text-white/80 uppercase tracking-[0.4em] text-sm font-display mt-4 flex items-center justify-center md:justify-start gap-3">
+            <span class="text-[#ff4081]">▶</span> Game Developer | Unity | Unreal | Roblox
+          </p>
+        </div>
+      </header>
+
+      <!-- Main Content Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-[1fr_2fr]">
+        
+        <!-- LEFT COLUMN (Contact + Skills) -->
+        <aside class="p-10 border-r border-white/5 space-y-12 bg-[#050505]/30">
+          <!-- Contact -->
+          <div class="space-y-6">
+            <h2 class="text-[#00bcd4] uppercase tracking-widest text-xs font-display font-bold flex items-center gap-2">
+              <span class="text-[#00bcd4]">▶</span> Contact
+            </h2>
+            <div class="space-y-4 text-xs font-mono">
+              <div class="flex items-center gap-3 text-zinc-400 hover:text-white transition-colors group">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-[#00bcd4] group-hover:scale-110 transition-transform"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                <span>7506702503</span>
+              </div>
+              <a href="mailto:mrhafiz7860@gmail.com" class="flex items-center gap-3 text-zinc-400 hover:text-white transition-colors group underline decoration-white/10 underline-offset-4">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-[#ff4081] group-hover:scale-110"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 7L2 7"/></svg>
+                <span>mrhafiz7860@gmail.com</span>
+              </a>
+              <a href="https://mrhafiz786.github.io/HafizShaikh.github.io/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 text-zinc-400 hover:text-white transition-colors group underline decoration-white/10 underline-offset-4">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-[#4caf50] group-hover:scale-110"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                <span>Portfolio</span>
+              </a>
+              <a href="https://www.linkedin.com/in/hafiz-s-330729289/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 text-zinc-400 hover:text-white transition-colors group underline decoration-white/10 underline-offset-4">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-[#00bcd4] group-hover:scale-110"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                <span>LinkedIn</span>
+              </a>
+              <div class="flex items-center gap-3 text-zinc-400 group">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-[#ff4081]"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <span>Mumbai, India</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Technical Skills -->
+          <div class="space-y-8">
+            <h2 class="text-[#00bcd4] uppercase tracking-widest text-xs font-display font-bold flex items-center gap-2">
+              <span class="text-[#00bcd4]">▶</span> Technical Skills
+            </h2>
+            <div class="space-y-6">
+              <div><h3 class="text-white text-[10px] uppercase font-display font-bold tracking-widest text-white/40">Game Engines</h3>
+                <div class="flex flex-wrap gap-2 mt-2"> <span class="tech-tag">Unity (2D,3D,HDRP)</span> <span class="tech-tag">Unreal Engine 5 (BP, C++, PCG)</span> <span class="tech-tag">Roblox Studio</span> </div>
+              </div>
+              <div><h3 class="text-white text-[10px] uppercase font-display font-bold tracking-widest text-white/40">Programming</h3>
+                <div class="flex flex-wrap gap-2 mt-2"> <span class="tech-tag">C# (Unity Gameplay)</span> <span class="tech-tag">C++ (Unreal Basics)</span> <span class="tech-tag">Lua (Roblox)</span> <span class="tech-tag">C (Fundamentals)</span> <span class="tech-tag">JavaScript</span> </div>
+              </div>
+              <div><h3 class="text-white text-[10px] uppercase font-display font-bold tracking-widest text-white/40">Testing & Tools</h3>
+                <div class="flex flex-wrap gap-2 mt-2"> <span class="tech-tag">Functional & Regression Testing</span> <span class="tech-tag">Bug Reporting</span> <span class="tech-tag">Gameplay Balancing</span> <span class="tech-tag">Git/GitHub</span> <span class="tech-tag">Performance Optimization</span> </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Languages -->
+          <div class="space-y-6">
+            <h2 class="text-[#00bcd4] uppercase tracking-widest text-xs font-display font-bold flex items-center gap-2">
+              <span class="text-[#00bcd4]">▶</span> Languages
+            </h2>
+            <div class="space-y-2">
+              <div class="flex items-center gap-2 text-xs text-zinc-500 font-mono"><span class="w-1 h-1 bg-[#00bcd4] rounded-full"></span> English – Fluent</div>
+              <div class="flex items-center gap-2 text-xs text-zinc-500 font-mono"><span class="w-1 h-1 bg-[#00bcd4] rounded-full"></span> Hindi – Fluent</div>
+              <div class="flex items-center gap-2 text-xs text-zinc-500 font-mono"><span class="w-1 h-1 bg-[#00bcd4] rounded-full"></span> Marathi (moderate)</div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- RIGHT COLUMN (About, Edu, Experience, Projects) -->
+        <main class="p-10 space-y-16">
+          <!-- About Me -->
+          <section class="space-y-6">
+            <h2 class="text-[#00bcd4] uppercase tracking-widest text-xs font-display font-bold flex items-center gap-2">
+              <span class="text-[#00bcd4]">▶</span> About Me
+            </h2>
+            <p class="text-base leading-relaxed text-zinc-400 font-sans italic border-l-2 border-[#00bcd4]/30 pl-6">
+              Game Developer with hands-on experience in <span class="text-white">Unity (C#)</span>, <span class="text-white">Unreal Engine (C++ & Blueprints)</span>, and 
+              <span class="text-white">Roblox Studio (Lua)</span>. Skilled in gameplay programming, AI behavior systems, physics implementation, UI systems, and performance optimization for 2D and 3D games. Experience in QA testing, bug reporting, regression testing, and cross-device performance analysis. Passionate about building polished, engaging gameplay systems with clean and maintainable code.
+            </p>
+          </section>
+
+          <!-- Education -->
+          <section class="space-y-6">
+            <h2 class="text-[#00bcd4] uppercase tracking-widest text-xs font-display font-bold flex items-center gap-2">
+              <span class="text-[#00bcd4]">▶</span> Education
+            </h2>
+            <div class="p-8 bg-white/5 border border-white/10 rounded-xl relative overflow-hidden group transition-all">
+              <div class="absolute top-0 right-0 p-4 bg-[#00bcd4]/10 border-l border-b border-white/10 text-[#00bcd4] font-mono text-[10px] uppercase tracking-widest group-hover:bg-[#00bcd4]/20 transition-colors">CGPA: 7.8</div>
+              <h3 class="text-white font-display text-2xl uppercase tracking-tighter">Ajeenkya DY Patil University, Pune</h3>
+              <p class="text-sm text-zinc-500 uppercase tracking-widest mt-1">BCA | Game Development | 2023 - 2026</p>
+            </div>
+          </section>
+
+          <!-- Work Experience -->
+          <section class="space-y-6">
+            <h2 class="text-[#00bcd4] uppercase tracking-widest text-xs font-display font-bold flex items-center gap-2">
+              <span class="text-[#00bcd4]">▶</span> Work Experience
+            </h2>
+            <div class="relative pl-6 before:absolute before:left-0 before:top-2 before:bottom-0 before:w-px before:bg-white/5">
+              <div class="relative mb-8">
+                <div class="absolute -left-[27px] top-1.5 w-1.5 h-1.5 rounded-full bg-[#ff4081] shadow-[0_0_10px_#ff4081]"></div>
+                <div class="flex flex-wrap justify-between items-center gap-2 mb-4">
+                  <h3 class="text-xl text-white font-display font-bold uppercase tracking-tight italic">Roblox Developer Intern</h3>
+                  <span class="text-[10px] uppercase text-[#ff4081] font-mono tracking-widest px-2 py-1 bg-[#ff4081]/5 border border-[#ff4081]/20 rounded">2025 | 3-MONTHS</span>
+                </div>
+                <ul class="text-sm text-zinc-500 space-y-3 leading-relaxed font-sans list-dash">
+                  <li>Developed gameplay features using Lua and Roblox Studio.</li>
+                  <li>Implemented player mechanics, UI systems, and RemoteEvent-based server-client communication.</li>
+                  <li>Tested, debugged, and optimized gameplay performance across devices.</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <!-- Projects Section -->
+          <section class="space-y-10">
+            <h2 class="text-[#00bcd4] uppercase tracking-widest text-xs font-display font-bold flex items-center gap-2">
+              <span class="text-[#00bcd4]">▶</span> Personal & Academic Projects
+            </h2>
+            <div class="grid gap-12">
+              <!-- Unity Projects -->
+              <div class="space-y-4">
+                <h3 class="text-[#ff4081] text-[10px] uppercase font-display font-bold tracking-[0.3em] pl-4 border-l-2 border-[#ff4081]">Unity Game Development Projects</h3>
+                <div class="grid gap-4">
+                  <div class="flex gap-4 p-4 bg-white/[0.02] border border-white/5 rounded-lg group hover:bg-white/[0.04] transition-colors"><span class="text-[#00bcd4] font-mono text-[10px] mt-1">01</span><p class="text-sm text-zinc-500 group-hover:text-zinc-300">Developed multiple 2D & 3D games including platformer, horror, racing, and survival projects.</p></div>
+                  <div class="flex gap-4 p-4 bg-white/[0.02] border border-white/5 rounded-lg group hover:bg-white/[0.04]"><span class="text-[#00bcd4] font-mono text-[10px] mt-1">02</span><p class="text-sm text-zinc-500 group-hover:text-zinc-300">Implemented gameplay systems: player controllers, AI behaviors, gear mechanics, traps, weapons, and UI.</p></div>
+                  <div class="flex gap-4 p-4 bg-white/[0.02] border border-white/5 rounded-lg group hover:bg-white/[0.04]"><span class="text-[#00bcd4] font-mono text-[10px] mt-1">03</span><p class="text-sm text-zinc-500 group-hover:text-zinc-300">Built <span class="text-white italic">“Wada 1729”</span> (Unity HDRP) with cinematic lighting and environment design.</p></div>
+                  <div class="flex gap-4 p-4 bg-white/[0.02] border border-white/5 rounded-lg group hover:bg-white/[0.04]"><span class="text-[#00bcd4] font-mono text-[10px] mt-1">04</span><p class="text-sm text-zinc-500 group-hover:text-zinc-300">Created AR applications using AR Foundation & Vuforia (plane detection & face tracking).</p></div>
+                  <div class="flex gap-4 p-4 bg-white/[0.02] border border-white/5 rounded-lg group hover:bg-white/[0.04]"><span class="text-[#00bcd4] font-mono text-[10px] mt-1">05</span><p class="text-sm text-zinc-500 group-hover:text-zinc-300">Focused on performance optimization and gameplay polish.</p></div>
+                </div>
+              </div>
+
+              <!-- Unreal Engine 5 -->
+              <div class="space-y-4">
+                <h3 class="text-[#4caf50] text-[10px] uppercase font-display font-bold tracking-[0.3em] pl-4 border-l-2 border-[#4caf50]">Unreal Engine 5 (Blueprints & C++)</h3>
+                <div class="p-6 bg-white/[0.02] border border-white/5 rounded-lg hover:border-[#4caf50]/30 transition-all group">
+                  <h4 class="text-white font-display mb-4 italic group-hover:text-[#4caf50] transition-colors text-lg">Systems & Environment Design</h4>
+                  <p class="text-sm text-zinc-500 leading-relaxed">Developed player movement, health systems, traps, and basic enemy AI. Designed terrain and environments using Landscape tools and PCG Graph. Focused on level composition and immersive environment design.</p>
+                </div>
+              </div>
+
+              <!-- Roblox Personal Project Section with added header -->
+              <div class="space-y-4">
+                <!-- NEW HEADER: Roblox Personal Project -->
+                <h3 class="text-[#00bcd4] text-[10px] uppercase font-display font-bold tracking-[0.3em] pl-4 border-l-2 border-[#00bcd4]">Roblox Personal Project</h3>
+                
+                <div class="p-6 bg-[#00bcd4]/5 border border-[#00bcd4]/20 rounded-xl flex flex-col md:flex-row justify-between items-center gap-6 group hover:bg-[#00bcd4]/10 transition-colors">
+                  <div class="space-y-2 text-center md:text-left">
+                    <h3 class="text-white font-display text-xl uppercase tracking-tighter italic">Clothing Tester</h3>
+                    <p class="text-xs text-zinc-500 font-mono tracking-widest uppercase">Mobile-friendly clothing preview game</p>
+                  </div>
+                  <div class="flex items-center gap-4 bg-black/40 px-6 py-3 border border-white/10 rounded-full font-display">
+                    <div class="text-right"><div class="text-[#00bcd4] text-xl font-black leading-none italic">5,000+</div><div class="text-[8px] uppercase tracking-widest text-zinc-600">Visits Record</div></div>
+                    <div class="w-px h-8 bg-white/10"></div>
+                    <div class="text-left"><div class="text-[#ff4081] text-xl font-black leading-none italic">91%</div><div class="text-[8px] uppercase tracking-widest text-zinc-600">Approval Rate</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+
+      <!-- Footer with additional note -->
+      <footer class="p-12 border-t-4 border-[#00bcd4] bg-[#050505]/80 text-center relative overflow-hidden">
+        <div class="scanline opacity-50"></div>
+        <p class="text-[10px] uppercase tracking-[0.5em] text-zinc-700 font-mono">Hafiz Shaikh // Professional Archive // 2024</p>
+        <p class="text-[8px] uppercase tracking-[0.3em] text-zinc-800 font-mono mt-4">ALL PROJECTS & WORK AVAILABLE IN PORTFOLIO</p>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Mouse follower script (vanilla) -->
+  <script>
+    (function() {
+      const follower = document.getElementById('cursorFollower');
+      const glow = document.getElementById('cursorGlow');
+      if (!follower || !glow) return;
+      
+      let mouseX = 0, mouseY = 0;
+      let followerX = 0, followerY = 0;
+      let glowX = 0, glowY = 0;
+      
+      document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        // check hover target
+        const target = e.target;
+        const isInteractive = target.closest?.('a, button, [role="button"], .tech-tag');
+        if (isInteractive) {
+          follower.style.width = '40px';
+          follower.style.height = '40px';
+          follower.style.borderColor = 'rgba(0, 188, 212, 0.9)';
+          follower.style.boxShadow = '0 0 20px rgba(0, 188, 212, 0.6)';
+        } else {
+          follower.style.width = '24px';
+          follower.style.height = '24px';
+          follower.style.borderColor = 'rgba(0, 188, 212, 0.6)';
+          follower.style.boxShadow = 'none';
+        }
+      });
+      
+      function animate() {
+        // smooth spring-like interpolation
+        followerX += (mouseX - followerX) * 0.2;
+        followerY += (mouseY - followerY) * 0.2;
+        glowX += (mouseX - glowX) * 0.1;
+        glowY += (mouseY - glowY) * 0.1;
+        
+        follower.style.transform = `translate(${followerX}px, ${followerY}px) translate(-50%, -50%)`;
+        glow.style.transform = `translate(${glowX}px, ${glowY}px) translate(-50%, -50%)`;
+        
+        requestAnimationFrame(animate);
+      }
+      animate();
+      
+      // hide on mobile
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        follower.style.display = 'none';
+        glow.style.display = 'none';
+      }
+    })();
+  </script>
+
+
+<!-- 🔥 Hacker System START -->
+
+<style>
+#secCanvas{
+position:fixed;top:0;left:0;width:100%;height:100%;
+z-index:9990;display:none
+}
+
+#secWarn{
+position:fixed;top:50%;left:50%;
+transform:translate(-50%,-50%);
+background:#000;color:#00ff88;
+padding:20px;border:2px solid #00ff88;
+white-space:pre-line;
+opacity:0;
+z-index:99999;
+font-family:monospace;
+text-align:center;
+transition:opacity .3s ease;
+}
+
+.flash{
+position:fixed;top:0;left:0;width:100%;height:100%;
+background:rgba(255,0,0,0.2);
+z-index:99998;
+animation:f .3s forwards
+}
+@keyframes f{to{opacity:0}}
+
+.shake{animation:shake .4s}
+@keyframes shake{
+0%{transform:translate(0,0)}
+25%{transform:translate(-5px,5px)}
+50%{transform:translate(5px,-5px)}
+75%{transform:translate(-5px,5px)}
+100%{transform:translate(0,0)}
+}
+</style>
+
+<canvas id="secCanvas"></canvas>
+<div id="secWarn"></div>
+
+<script>
+(function(){
+
+let canvas=document.getElementById("secCanvas"),
+ctx=canvas.getContext("2d"),
+w=document.getElementById("secWarn");
+
+canvas.width=innerWidth;
+canvas.height=innerHeight;
+
+/* MATRIX */
+let letters="01SECURITY".split("");
+let font=14;
+let cols=canvas.width/font;
+let drops=[];
+for(let i=0;i<cols;i++)drops[i]=1;
+
+let running=false;
+
+function matrix(){
+if(!running)return;
+
+ctx.fillStyle="rgba(0,0,0,0.05)";
+ctx.fillRect(0,0,canvas.width,canvas.height);
+
+ctx.fillStyle="#0f0";
+ctx.font=font+"px monospace";
+
+for(let i=0;i<drops.length;i++){
+let t=letters[Math.floor(Math.random()*letters.length)];
+ctx.fillText(t,i*font,drops[i]*font);
+
+if(drops[i]*font>canvas.height&&Math.random()>0.975)drops[i]=0;
+drops[i]++;
+}
+
+requestAnimationFrame(matrix);
+}
+
+/* 🔊 Soft UI sound */
+function beep(){
+let ctx=new(AudioContext||webkitAudioContext)();
+let o=ctx.createOscillator();
+let g=ctx.createGain();
+
+o.type="sine";
+o.frequency.value=520;
+
+o.connect(g);
+g.connect(ctx.destination);
+
+g.gain.setValueAtTime(0.001,ctx.currentTime);
+g.gain.exponentialRampToValueAtTime(0.15,ctx.currentTime+0.05);
+g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.25);
+
+o.start();
+o.stop(ctx.currentTime+0.25);
+}
+
+/* 🌍 API */
+async function getUserData(){
+try{
+let r=await fetch("https://ipapi.co/json/");
+let d=await r.json();
+return {ip:d.ip,country:d.country_name,city:d.city};
+}catch{
+return {ip:"UNKNOWN",country:"UNKNOWN",city:"UNKNOWN"};
+}
+}
+
+/* TYPE EFFECT */
+function typeText(el,text,s=15){
+el.innerHTML="";
+let i=0;
+(function t(){
+if(i<text.length){
+el.innerHTML+=text.charAt(i++);
+setTimeout(t,s);
+}
+})();
+}
+
+/* 🚨 WARN */
+async function warn(){
+
+/* 🧠 Prevent loop */
+if(sessionStorage.getItem("blockedOnce")) return;
+sessionStorage.setItem("blockedOnce","true");
+
+beep();
+
+document.body.classList.add("shake");
+setTimeout(()=>document.body.classList.remove("shake"),400);
+
+let d=await getUserData();
+
+let msg=
+`⚠️ ACTION BLOCKED ⚠️
+
+> IP: ${d.ip}
+> ${d.country}, ${d.city}
+
+Going back to the website...
+Don’t do that again.`
+
+w.style.opacity=1;
+typeText(w,msg,15);
+
+/* flash */
+let f=document.createElement("div");
+f.className="flash";
+document.body.appendChild(f);
+setTimeout(()=>f.remove(),300);
+
+/* matrix start */
+canvas.style.display="block";
+running=true;
+matrix();
+
+/* STEP 1: hide UI */
+setTimeout(()=>{
+w.style.opacity=0;
+},3000);
+
+/* STEP 2: stop matrix + reload */
+setTimeout(()=>{
+running=false;
+canvas.style.display="none";
+
+/* 🔥 reload */
+location.reload();
+
+},4000);
+}
+
+/* BLOCK */
+document.addEventListener("contextmenu",e=>{
+e.preventDefault();
+warn();
+});
+
+document.addEventListener("keydown",e=>{
+if(
+(e.ctrlKey&&e.key.toLowerCase()=="u")||
+(e.ctrlKey&&e.shiftKey&&e.key.toLowerCase()=="i")||
+e.key=="F12"
+){
+e.preventDefault();
+warn();
+}
+});
+
+})();
+</script>
+
+<!-- 🔥 Hacker System END -->
+
+</body>
+</html>
