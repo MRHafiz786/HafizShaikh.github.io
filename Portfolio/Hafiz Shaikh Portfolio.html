@@ -1,0 +1,1566 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hafiz Shaikh - Game Developer Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#00bcd4',
+                        secondary: '#ff4081',
+                        accent: '#4caf50',
+                        dark: '#0f0f0f',
+                        darker: '#050505',
+                    },
+                    fontFamily: {
+                        sans: ["'Inter'", 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                        display: ["'Space Grotesk'", 'sans-serif'],
+                        mono: ["'JetBrains Mono'", 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            --color-primary: #00bcd4;
+            --color-secondary: #ff4081;
+            --color-accent: #4caf50;
+            --color-dark: #0f0f0f;
+            --color-darker: #050505;
+        }
+
+        body {
+            font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+            background-color: var(--color-darker);
+            color: white;
+            cursor: none;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 188, 212, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255, 64, 129, 0.05) 0%, transparent 20%);
+            background-attachment: fixed;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        code, pre, .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Hide default cursor on all interactive elements */
+        a, button, input, [role="button"], .btn-primary, .btn-secondary, select, textarea {
+            cursor: none !important;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border-radius: 0.75rem;
+        }
+
+        .scanline {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+            animation: scanline 3s linear infinite;
+        }
+
+        @keyframes scanline {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { filter: drop-shadow(0 0 10px rgba(0, 188, 212, 0.2)); }
+            50% { filter: drop-shadow(0 0 20px rgba(0, 188, 212, 0.4)); }
+        }
+
+        @keyframes float-orb-1 {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -20px) rotate(120deg); }
+            66% { transform: translate(-20px, 30px) rotate(240deg); }
+        }
+
+        @keyframes float-orb-2 {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(-30px, 20px) rotate(-120deg); }
+            66% { transform: translate(20px, -30px) rotate(-240deg); }
+        }
+
+        @keyframes float-orb-3 {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(20px, 30px) rotate(60deg); }
+            66% { transform: translate(-30px, -20px) rotate(-60deg); }
+        }
+
+        .section-fade {
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        .section-fade.visible {
+            opacity: 1;
+        }
+
+        .mouse-follower {
+            pointer-events: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 24px;
+            height: 24px;
+            border: 2px solid rgba(0, 188, 212, 0.5);
+            border-radius: 50%;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s ease, height 0.3s ease, border-color 0.3s ease;
+        }
+
+        .mouse-follower.hover {
+            width: 40px;
+            height: 40px;
+            border-color: rgba(0, 188, 212, 0.8);
+            box-shadow: 0 0 20px rgba(0, 188, 212, 0.6);
+        }
+
+        .mouse-follower::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 4px;
+            height: 4px;
+            background: var(--color-primary);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .cursor-glow {
+            pointer-events: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(0, 188, 212, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: 0;
+            filter: blur(100px);
+            transform: translate(-50%, -50%);
+        }
+
+        .nav-underline {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-underline::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--color-primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-underline:hover::after {
+            width: 100%;
+        }
+
+        .project-card {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 0 40px rgba(0, 188, 212, 0.3);
+            border-color: rgba(0, 188, 212, 0.6);
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 188, 212, 0.1) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .project-card:hover::before {
+            opacity: 1;
+        }
+
+        .project-card-left-border {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--color-primary);
+            transform: translateX(-4px);
+            transition: transform 0.3s;
+        }
+
+        .project-card:hover .project-card-left-border {
+            transform: translateX(0);
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .floating-text {
+            font-size: 120px;
+            opacity: 0.1;
+            filter: drop-shadow(0 0 20px rgba(0, 188, 212, 0.1));
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+        }
+
+        .orb-1 {
+            top: 15%;
+            left: 10%;
+            width: 288px;
+            height: 288px;
+            background: rgba(0, 188, 212, 0.05);
+            animation: float-orb-1 20s ease-in-out infinite;
+        }
+
+        .orb-2 {
+            top: 45%;
+            right: 5%;
+            width: 480px;
+            height: 480px;
+            background: rgba(255, 64, 129, 0.05);
+            animation: float-orb-2 25s ease-in-out infinite;
+        }
+
+        .orb-3 {
+            bottom: 10%;
+            left: 20%;
+            width: 384px;
+            height: 384px;
+            background: rgba(0, 188, 212, 0.05);
+            animation: float-orb-3 30s ease-in-out infinite;
+        }
+
+        .parallax-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .section {
+            position: relative;
+            z-index: 10;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: var(--color-darker);
+            font-weight: 700;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--color-primary);
+            transition: all 0.3s;
+            cursor: pointer;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .btn-primary:hover {
+            background: transparent;
+            color: var(--color-primary);
+            transform: scale(1.05);
+        }
+
+        .btn-secondary {
+            background: var(--color-secondary);
+            color: white;
+            font-weight: 700;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--color-secondary);
+            transition: all 0.3s;
+            cursor: pointer;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .btn-secondary:hover {
+            background: transparent;
+            color: var(--color-secondary);
+        }
+
+        .tech-tag {
+            display: inline-block;
+            font-size: 0.625rem;
+            padding: 0.25rem 0.5rem;
+            background: rgba(0, 188, 212, 0.1);
+            color: var(--color-primary);
+            border-radius: 0.25rem;
+            border: 1px solid rgba(0, 188, 212, 0.2);
+            font-family: 'JetBrains Mono', monospace;
+            margin: 0.25rem;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 0.5rem;
+        }
+
+        /* Header specific styles */
+        header {
+            border-bottom: 4px solid var(--color-primary);
+        }
+
+        header h1 {
+            font-size: clamp(2rem, 10vw, 4rem);
+            font-weight: 900;
+            color: var(--color-primary);
+            text-shadow: 0 0 30px rgba(0, 188, 212, 0.4);
+            letter-spacing: -0.04em;
+        }
+
+        /* Smooth scroll behavior */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .orb-1 { width: 200px; height: 200px; }
+            .orb-2 { width: 300px; height: 300px; }
+            .orb-3 { width: 250px; height: 250px; }
+        }
+
+        .highlight {
+            color: var(--color-primary);
+            font-weight: 600;
+        }
+
+        .highlight-secondary {
+            color: var(--color-secondary);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-darker selection:bg-primary/30 relative overflow-x-hidden">
+    <!-- Parallax Background -->
+    <div class="parallax-bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div style="position: absolute; top: 20%; right: 15%; opacity: 0.15; z-index: 1;"><i data-lucide="gamepad-2" style="width: 120px; height: 120px; color: #00bcd4;"></i></div>
+        <div style="position: absolute; top: 60%; left: 5%; opacity: 0.15; z-index: 1;"><i data-lucide="cpu" style="width: 80px; height: 80px; color: #ff4081;"></i></div>
+        <div style="position: absolute; bottom: 20%; right: 20%; opacity: 0.15; z-index: 1;"><i data-lucide="code-2" style="width: 100px; height: 100px; color: #4caf50;"></i></div>
+    </div>
+
+    <!-- Mouse Follower -->
+    <div id="cursorGlow" class="cursor-glow" style="display: none;"></div>
+    <div id="mouseFollower" class="mouse-follower" style="display: none;"></div>
+
+    <!-- Header -->
+    <header class="relative py-20 px-4 text-center border-b-4 border-primary bg-darker overflow-hidden z-10">
+        <div class="scanline"></div>
+        <div class="relative z-10 animate-fadeInUp" style="animation: fadeInUp 0.8s ease-out;">
+            <h1 class="text-5xl md:text-7xl font-bold text-primary mb-4" style="text-shadow: 0 0 30px rgba(0, 188, 212, 0.4); letter-spacing: -0.02em; font-family: 'Space Grotesk', sans-serif;">HAFIZ SHAIKH</h1>
+            <p class="text-lg md:text-xl text-white/80 font-display uppercase tracking-[0.2em] mb-8">
+                <i data-lucide="gamepad-2" style="width: 18px; height: 18px; display: inline; color: #ff4081; margin-right: 6px;"></i> Game Developer | Unity | Unreal Engine | Roblox
+            </p>
+            
+            <div class="flex flex-wrap justify-center gap-4 md:gap-6 text-sm text-white/60">
+                <a href="tel:7506702503" class="flex items-center gap-2 hover:text-primary transition-colors">
+                    <i data-lucide="phone" style="width: 14px; height: 14px; color: #00bcd4;"></i> 7506702503
+                </a>
+                <a href="mailto:mrhafiz7860@gmail.com" class="flex items-center gap-2 hover:text-primary transition-colors">
+                    <i data-lucide="mail" style="width: 14px; height: 14px; color: #ff4081;"></i> mrhafiz7860@gmail.com
+                </a>
+                <a href="https://www.linkedin.com/in/hafiz-shaikh-330729289" target="_blank" class="flex items-center gap-2 hover:text-primary transition-colors">
+                    <i data-lucide="share-2" style="width: 14px; height: 14px; color: #4caf50;"></i> LinkedIn
+                </a>
+                <a href="https://bold.pro/my/hafiz-shaikh/567r" target="_blank" class="flex items-center gap-2 hover:text-primary transition-colors">
+                    <i data-lucide="globe" style="width: 14px; height: 14px; color: #00bcd4;"></i> Resume
+                </a>
+                <span class="flex items-center gap-2">
+                    <i data-lucide="map-pin" style="width: 14px; height: 14px; color: #ff4081;"></i> Mumbai, India
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-darker/80 backdrop-blur-md border-b border-white/10 py-4">
+        <div class="max-w-6xl mx-auto px-4 flex justify-center gap-4 md:gap-8 overflow-x-auto no-scrollbar">
+            <a href="#showcase" class="text-xs md:text-sm font-bold uppercase tracking-widest text-white/60 hover:text-primary transition-colors nav-underline whitespace-nowrap">Showcase</a>
+            <a href="#summary" class="text-xs md:text-sm font-bold uppercase tracking-widest text-white/60 hover:text-primary transition-colors nav-underline whitespace-nowrap">Summary</a>
+            <a href="#skills" class="text-xs md:text-sm font-bold uppercase tracking-widest text-white/60 hover:text-primary transition-colors nav-underline whitespace-nowrap">Skills</a>
+            <a href="#education" class="text-xs md:text-sm font-bold uppercase tracking-widest text-white/60 hover:text-primary transition-colors nav-underline whitespace-nowrap">Education</a>
+            <a href="#projects" class="text-xs md:text-sm font-bold uppercase tracking-widest text-white/60 hover:text-primary transition-colors nav-underline whitespace-nowrap">Projects</a>
+            <a href="#additional" class="text-xs md:text-sm font-bold uppercase tracking-widest text-white/60 hover:text-primary transition-colors nav-underline whitespace-nowrap">Additional</a>
+            <a href="#contact" class="text-xs md:text-sm font-bold uppercase tracking-widest text-white/60 hover:text-primary transition-colors nav-underline whitespace-nowrap">Contact</a>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Game Showcase Section -->
+        <section id="showcase" class="section py-16 px-4 max-w-6xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-8">
+                <i data-lucide="gamepad-2" class="text-primary" style="width: 32px; height: 32px;"></i>
+                <h2 class="text-3xl font-bold text-white flex items-center gap-2">
+                    <span class="text-primary text-xl">▶</span> Game Development Showcase
+                </h2>
+                <div class="h-[1px] flex-1 bg-white/10 ml-4"></div>
+            </div>
+
+            <div class="glass-card p-8">
+                <div class="w-full flex flex-col items-center gap-6 relative">
+                    <!-- Game Controls -->
+                    <div class="flex justify-center gap-4 w-full flex-wrap">
+                        <button id="startGameBtn" class="btn-primary">
+                            ▶ START GAME
+                        </button>
+                        <button id="restartGameBtn" class="btn-secondary" disabled>
+                            ↻ RESTART
+                        </button>
+                    </div>
+
+                    <div class="relative w-full max-w-[800px] aspect-video group">
+                        <canvas
+                            id="gameCanvas"
+                            width="800"
+                            height="400"
+                            class="w-full h-full glass-card border-2 transition-all"
+                            style="border-color: rgba(0, 188, 212, 0.3); box-shadow: 0 25px 50px -12px rgba(0, 188, 212, 0.1); border-radius: 0.5rem;"
+                        ></canvas>
+
+                        <!-- HUD -->
+                        <div id="gameHUD" style="display: none;">
+                            <div class="absolute top-4 left-4 right-4 flex justify-between items-start pointer-events-none">
+                                <div class="glass-card p-3 rounded border border-white/10">
+                                    <p class="text-[10px] uppercase tracking-widest text-white/40 mb-1">Score</p>
+                                    <p id="scoreDisplay" class="text-xl font-bold text-primary leading-none">0</p>
+                                </div>
+                                <div class="glass-card p-3 rounded border border-white/10 text-right">
+                                    <p class="text-[10px] uppercase tracking-widest text-white/40 mb-1">Time</p>
+                                    <p id="timeDisplay" class="text-xl font-bold text-white leading-none">0s</p>
+                                </div>
+                            </div>
+
+                            <!-- Progress Bar -->
+                            <div class="absolute top-4 left-1/2 -translate-x-1/2 w-48 h-2 bg-darker/60 rounded-full border border-white/10 overflow-hidden">
+                                <div id="progressBar" class="h-full bg-primary transition-all duration-300" style="width: 0%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Start Screen -->
+                        <div id="startScreen" class="absolute inset-0 flex flex-col items-center justify-center bg-darker/90 backdrop-blur-sm rounded-lg z-20">
+                            <h3 class="text-3xl font-bold text-primary mb-2 tracking-tighter">GAME SHOWCASE</h3>
+                            <p class="text-white/60 text-sm mb-8 font-mono uppercase tracking-widest text-center px-4">
+                                Collect all 8 coins (80 points)<br/>Avoid the slow-moving enemies
+                            </p>
+                            <button id="startScreenBtn" class="px-8 py-3 bg-primary text-darker font-bold rounded-full hover:scale-105 transition-transform" style="box-shadow: 0 0 20px rgba(0, 188, 212, 0.4);">
+                                ▶ START MISSION
+                            </button>
+                        </div>
+
+                        <!-- Game Over/Win Screen -->
+                        <div id="gameOverScreen" style="display: none;" class="absolute inset-0 flex flex-col items-center justify-center bg-darker/90 backdrop-blur-sm rounded-lg z-20">
+                            <h3 id="gameOverTitle" class="text-4xl font-bold mb-2 tracking-tighter" style="color: var(--color-primary);">VICTORY!</h3>
+                            <p id="gameOverMessage" class="text-white/60 text-sm mb-8 font-mono uppercase tracking-widest"></p>
+                            <button id="retryGameBtn" class="px-8 py-3 bg-white text-darker font-bold rounded-full hover:scale-105 transition-transform">
+                                ↻ RETRY MISSION
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Instructions -->
+                    <div class="w-full max-w-[800px] bg-primary/5 border border-primary/20 rounded-lg p-4">
+                        <h4 class="text-xs font-bold text-primary uppercase tracking-widest mb-3">Game Controls:</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="flex items-center gap-2 text-[10px] text-white/60">
+                                <span class="px-2 py-1 bg-darker border border-white/10 rounded text-primary font-mono">←/A</span> Move Left
+                            </div>
+                            <div class="flex items-center gap-2 text-[10px] text-white/60">
+                                <span class="px-2 py-1 bg-darker border border-white/10 rounded text-primary font-mono">→/D</span> Move Right
+                            </div>
+                            <div class="flex items-center gap-2 text-[10px] text-white/60">
+                                <span class="px-2 py-1 bg-darker border border-white/10 rounded text-primary font-mono">↑/W/Space</span> Jump
+                            </div>
+                            <div class="flex items-center gap-2 text-[10px] text-white/60">
+                                <span class="px-2 py-1 bg-darker border border-white/10 rounded text-primary font-mono">R</span> Restart
+                            </div>
+                        </div>
+                        <p class="mt-4 text-center text-xs font-bold text-primary/80">
+                            Objective: Collect all 8 coins (80 points) while avoiding enemies!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Summary Section -->
+        <section id="summary" class="section py-16 px-4 max-w-6xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-8">
+                <i data-lucide="briefcase" class="text-primary" style="width: 32px; height: 32px;"></i>
+                <h2 class="text-3xl font-bold text-white flex items-center gap-2">
+                    <span class="text-primary text-xl">▶</span> Professional Summary
+                </h2>
+                <div class="h-[1px] flex-1 bg-white/10 ml-4"></div>
+            </div>
+
+            <div class="glass-card p-8 border-l-4" style="border-left-color: var(--color-primary);">
+                <p class="text-lg text-white/80 leading-relaxed">
+                    Passionate and skilled <span class="highlight">Game Developer</span> with expertise in <span class="highlight">Unity</span> and <span class="highlight">Unreal Engine 5</span>. 
+                    Specialized in crafting <span class="highlight">2D & 3D games</span>, immersive environments, and interactive mechanics. 
+                    Adept at problem-solving, performance optimization, and integrating <span class="highlight-secondary">modern technologies (AR & AI)</span>. 
+                    Seeking to contribute to impactful and innovative game development projects.
+                </p>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="section py-16 px-4 max-w-6xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-8">
+                <i data-lucide="code-2" class="text-primary" style="width: 32px; height: 32px;"></i>
+                <h2 class="text-3xl font-bold text-white flex items-center gap-2">
+                    <span class="text-primary text-xl">▶</span> Technical Skills
+                </h2>
+                <div class="h-[1px] flex-1 bg-white/10 ml-4"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Game Engines -->
+                <div class="glass-card p-6 hover:border-primary/30 transition-colors">
+                    <div class="flex items-center gap-2 mb-4 text-primary">
+                        <i data-lucide="cpu" style="width: 18px; height: 18px;"></i>
+                        <h3 class="font-bold uppercase tracking-wider text-sm">Game Engines</h3>
+                    </div>
+                    <ul class="space-y-2">
+                        <li class="text-sm text-white/60 flex items-center gap-2">
+                            <span class="w-1 h-1 bg-primary rounded-full"></span> Unity
+                        </li>
+                        <li class="text-sm text-white/60 flex items-center gap-2">
+                            <span class="w-1 h-1 bg-primary rounded-full"></span> Unreal Engine 5
+                        </li>
+                        <li class="text-sm text-white/60 flex items-center gap-2">
+                            <span class="w-1 h-1 bg-primary rounded-full"></span> Roblox Studio
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Programming -->
+                <div class="glass-card p-6 hover:border-primary/30 transition-colors">
+                    <div class="flex items-center gap-2 mb-4 text-primary">
+                        <i data-lucide="code-2" style="width: 18px; height: 18px;"></i>
+                        <h3 class="font-bold uppercase tracking-wider text-sm">Programming</h3>
+                    </div>
+                    <ul class="space-y-2">
+                        <li class="text-sm text-white/60 flex items-center gap-2">
+                            <span class="w-1 h-1 bg-primary rounded-full"></span> C++ / C#
+                        </li>
+                        <li class="text-sm text-white/60 flex items-center gap-2">
+                            <span class="w-1 h-1 bg-primary rounded-full"></span> HTML / CSS / JavaScript
+                        </li>
+                        <li class="text-sm text-white/60 flex items-center gap-2">
+                            <span class="w-1 h-1 bg-primary rounded-full"></span> MySQL
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Technologies -->
+                <div class="glass-card p-6 hover:border-primary/30 transition-colors">
+                    <div class="flex items-center gap-2 mb-4 text-primary">
+                        <i data-lucide="layers" style="width: 18px; height: 18px;"></i>
+                        <h3 class="font-bold uppercase tracking-wider text-sm">Technologies</h3>
+                    </div>
+                    <ul class="space-y-2">
+                        <li class="text-sm text-white/60 flex items-center gap-2">
+                            <span class="w-1 h-1 bg-primary rounded-full"></span> AR/VR Development
+                        </li>
+                        <li class="text-sm text-white/60 flex items-center gap-2">
+                            <span class="w-1 h-1 bg-primary rounded-full"></span> Git/GitHub
+                        </li>
+                        <li class="text-sm text-white/60 flex items-center gap-2">
+                            <span class="w-1 h-1 bg-primary rounded-full"></span> Blender
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Languages -->
+                <div class="glass-card p-6 hover:border-primary/30 transition-colors">
+                    <div class="flex items-center gap-2 mb-4 text-primary">
+                        <i data-lucide="languages" style="width: 18px; height: 18px;"></i>
+                        <h3 class="font-bold uppercase tracking-wider text-sm">Languages</h3>
+                    </div>
+                    <ul class="space-y-2">
+                        <li class="text-sm text-white/60 flex items-center gap-2">
+                            <span class="w-1 h-1 bg-primary rounded-full"></span> Hindi (Native)
+                        </li>
+                        <li class="text-sm text-white/60 flex items-center gap-2">
+                            <span class="w-1 h-1 bg-primary rounded-full"></span> English (Fluent)
+                        </li>
+                        <li class="text-sm text-white/60 flex items-center gap-2">
+                            <span class="w-1 h-1 bg-primary rounded-full"></span> Marathi (Moderate)
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Education Section -->
+        <section id="education" class="section py-16 px-4 max-w-6xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-8">
+                <i data-lucide="graduation-cap" class="text-primary" style="width: 32px; height: 32px;"></i>
+                <h2 class="text-3xl font-bold text-white flex items-center gap-2">
+                    <span class="text-primary text-xl">▶</span> Education
+                </h2>
+                <div class="h-[1px] flex-1 bg-white/10 ml-4"></div>
+            </div>
+
+            <div class="glass-card p-8 flex flex-col md:flex-row justify-between items-start gap-6">
+                <div class="education-info">
+                    <h3 class="text-2xl font-bold text-primary">Ajeenky D.Y. Patil University, Pune</h3>
+                    <p class="text-lg text-white/80 font-bold">BCA in Game Development</p>
+                    <p class="text-sm text-white/40 mt-1">2023 — 2026</p>
+                    <p class="text-white/60 mt-4 max-w-xl">Specializing in game design, development, and interactive media creation.</p>
+                </div>
+                <div class="bg-primary/10 border border-primary/20 p-4 rounded-lg min-w-[120px] text-center flex-shrink-0">
+                    <p class="text-sm uppercase tracking-widest text-primary font-bold">Current CGPA</p>
+                    <p class="text-3xl font-bold text-white">7.8</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="section py-16 px-4 max-w-6xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-8">
+                <i data-lucide="trophy" class="text-primary" style="width: 32px; height: 32px;"></i>
+                <h2 class="text-3xl font-bold text-white flex items-center gap-2">
+                    <span class="text-primary text-xl">▶</span> Game Development Projects
+                </h2>
+                <div class="h-[1px] flex-1 bg-white/10 ml-4"></div>
+            </div>
+
+            <div class="space-y-16">
+                <!-- Unity Engine -->
+                <div>
+                    <h3 class="text-2xl font-bold text-secondary mb-8 border-l-4 border-secondary pl-4 bg-secondary/5 py-2 rounded-r-lg">
+                        Unity Engine Projects
+                    </h3>
+                    
+                    <h4 class="text-accent font-bold mb-6 flex items-center gap-2">
+                        <span style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">▶</span> Unity 2D Games
+                    </h4>
+                    <div id="unity2d-projects" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"></div>
+
+                    <h4 class="text-accent font-bold mb-6 flex items-center gap-2">
+                        <span style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">▶</span> Unity 3D Games
+                    </h4>
+                    <div id="unity3d-projects" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"></div>
+
+                    <h4 class="text-accent font-bold mb-6 flex items-center gap-2">
+                        <span style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">▶</span> Unity AR/VR
+                    </h4>
+                    <div id="unityar-projects" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                </div>
+
+                <!-- Unreal Engine -->
+                <div>
+                    <h3 class="text-2xl font-bold text-secondary mb-8 border-l-4 border-secondary pl-4 bg-secondary/5 py-2 rounded-r-lg">
+                        Unreal Engine Projects
+                    </h3>
+                    
+                    <h4 class="text-accent font-bold mb-6 flex items-center gap-2">
+                        <span style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">▶</span> Unreal Engine 2D
+                    </h4>
+                    <div id="unreal2d-projects" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12"></div>
+
+                    <h4 class="text-accent font-bold mb-6 flex items-center gap-2">
+                        <span style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">▶</span> Unreal Engine 3D
+                    </h4>
+                    <div id="unreal3d-projects" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                </div>
+
+                <!-- Roblox Games -->
+                <div>
+                    <h3 class="text-2xl font-bold text-secondary mb-8 border-l-4 border-secondary pl-4 bg-secondary/5 py-2 rounded-r-lg">
+                        Roblox Projects
+                    </h3>
+                    <div id="roblox-projects" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                </div>
+
+                <!-- Web Games -->
+                <div>
+                    <h3 class="text-2xl font-bold text-secondary mb-8 border-l-4 border-secondary pl-4 bg-secondary/5 py-2 rounded-r-lg">
+                        Web Games
+                    </h3>
+                    <div id="web-projects" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Additional Creative Projects Section -->
+        <section id="additional" class="section py-16 px-4 max-w-6xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-8">
+                <i data-lucide="layers" class="text-primary" style="width: 32px; height: 32px;"></i>
+                <h2 class="text-3xl font-bold text-white flex items-center gap-2">
+                    <span class="text-primary text-xl">▶</span> Additional Creative Projects
+                </h2>
+                <div class="h-[1px] flex-1 bg-white/10 ml-4"></div>
+            </div>
+
+            <div id="additional-projects" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </section>
+
+        <!-- Contact Section (Enhanced) -->
+        <section id="contact" class="section py-16 px-4 max-w-6xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 mb-8">
+                <i data-lucide="mail" class="text-primary" style="width: 32px; height: 32px;"></i>
+                <h2 class="text-3xl font-bold text-white flex items-center gap-2">
+                    <span class="text-primary text-xl">▶</span> Contact Information
+                </h2>
+                <div class="h-[1px] flex-1 bg-white/10 ml-4"></div>
+            </div>
+
+            <div class="glass-card p-8 text-center max-w-3xl mx-auto">
+                <h3 class="text-2xl font-bold mb-8 text-white">Let's build something legendary.</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-left">
+                    <div class="space-y-4">
+                        <p class="flex items-center gap-3 text-white/80">
+                            <i data-lucide="mail" class="text-primary" style="width: 18px; height: 18px; flex-shrink: 0;"></i>
+                            <a href="mailto:mrhafiz7860@gmail.com" class="hover:text-primary transition-colors">mrhafiz7860@gmail.com</a>
+                        </p>
+                        <p class="flex items-center gap-3 text-white/80">
+                            <i data-lucide="phone" class="text-primary" style="width: 18px; height: 18px; flex-shrink: 0;"></i>
+                            <a href="tel:7506702503" class="hover:text-primary transition-colors">7506702503</a>
+                        </p>
+                        <p class="flex items-center gap-3 text-white/80">
+                            <i data-lucide="map-pin" class="text-primary" style="width: 18px; height: 18px; flex-shrink: 0;"></i>
+                            <span>Mumbai, India</span>
+                        </p>
+                    </div>
+                    <div class="space-y-4">
+                        <p class="flex items-center gap-3 text-white/80">
+                            <i data-lucide="share-2" class="text-primary" style="width: 18px; height: 18px; flex-shrink: 0;"></i>
+                            <a href="https://www.linkedin.com/in/hafiz-shaikh-330729289" target="_blank" class="hover:text-primary transition-colors">linkedin.com/in/hafiz-shaikh</a>
+                        </p>
+                        <p class="flex items-center gap-3 text-white/80">
+                            <i data-lucide="globe" class="text-primary" style="width: 18px; height: 18px; flex-shrink: 0;"></i>
+                            <a href="https://mrhafiz786.github.io/HafizShaikh.github.io/" target="_blank" class="hover:text-primary transition-colors">Resume</a>
+                        </p>
+                        <p class="flex items-center gap-3 text-white/80">
+                            <i data-lucide="code" class="text-primary" style="width: 18px; height: 18px; flex-shrink: 0;"></i>
+                            <a href="https://github.com/hafiz" target="_blank" class="hover:text-primary transition-colors">github.com/hafiz</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+    </main>
+
+    <script>
+        // ============= PROJECT DATA =============
+        const projects = {
+            unity2d: [
+                { title: "Flappy Bird (2D)", description: "Classic endless flier game where pipes continuously spawn and the player must navigate the bird through gaps.", tech: "Unity 2D", buildLink: "https://drive.google.com/drive/folders/1GEEgv8t7JKlBAEL-U8ESzOSfA11Lc9nR?usp=sharing", videoLink: "https://drive.google.com/drive/folders/1QXEP4uXQHNtbbs5wX0FwtK1TGmw9D_7K?usp=drive_link" },
+                { title: "Dragon Game (2D Platformer)", description: "Player controls a dragon character who needs to collect fruits to pass each level. Features various traps and enemies.", tech: "Unity 2D", buildLink: "https://drive.google.com/drive/folders/1zlAFNx1D6maxrr51yl2BOEN6BQORUtxv?usp=sharing", videoLink: "https://drive.google.com/drive/folders/1PgBW_q24vvHbjMjA2WIA3OixUf7X38AQ?usp=sharing" },
+                { title: "Ball Game (2D Platformer)", description: "Inspired by classic Redball games, features a rolling ball character navigating through challenging levels with physics-based movement.", tech: "Unity 2D", buildLink: "https://drive.google.com/drive/folders/1zlAFNx1D6maxrr51yl2BOEN6BQORUtxv?usp=sharing", videoLink: "https://github.com/hafiz/ball-game" },
+                { title: "Pen and the Pain (2D Platformer)", description: "A girl trapped inside a book must escape from words in this fully parkour-based adventure using precise platforming.", tech: "Unity 2D", buildLink: "https://drive.google.com/drive/folders/1zlAFNx1D6maxrr51yl2BOEN6BQORUtxv?usp=sharing", videoLink: "https://github.com/hafiz/pen-and-pain" },
+                { title: "Parkour Game (2D Platformer)", description: "Fast-paced parkour mechanics featuring wall jumps, slides, and obstacle navigation through challenging level designs.", tech: "Unity 2D", buildLink: "https://drive.google.com/drive/folders/1zlAFNx1D6maxrr51yl2BOEN6BQORUtxv?usp=sharing", videoLink: "https://github.com/hafiz" },
+                { title: "Cube Runner (2D Hyper Casual)", description: "Endless runner game featuring procedurally generated obstacles and increasing difficulty as the player progresses.", tech: "Unity 2D", buildLink: "https://drive.google.com/drive/folders/1zlAFNx1D6maxrr51yl2BOEN6BQORUtxv?usp=sharing", videoLink: "https://github.com/hafiz" },
+                { title: "Candle Runner (2D Hyper Casual)", description: "Control a candle, avoiding obstacles and collecting flames to keep it lit while running through dark environments.", tech: "Unity 2D", buildLink: "https://drive.google.com/drive/folders/1zlAFNx1D6maxrr51yl2BOEN6BQORUtxv?usp=sharing", videoLink: "https://github.com/hafiz" },
+                { title: "Memory Card Game (2D Hyper Casual)", description: "Classic match-pairs memory game where players flip cards to find matching pairs, testing visual memory.", tech: "Unity 2D", buildLink: "https://drive.google.com/drive/folders/1zlAFNx1D6maxrr51yl2BOEN6BQORUtxv?usp=sharing", videoLink: "https://github.com/hafiz" },
+                { title: "Word Quiz Game (2D Hyper Casual)", description: "Educational word puzzle game testing vocabulary and spelling through multiple-choice questions.", tech: "Unity 2D", buildLink: "https://drive.google.com/drive/folders/1zlAFNx1D6maxrr51yl2BOEN6BQORUtxv?usp=sharing", videoLink: "https://github.com/hafiz" },
+                { title: "Stack Tower (2D)", description: "Precision stacking game where players place falling blocks to build the tallest possible tower without toppling over.", tech: "Unity 2D", buildLink: "https://drive.google.com/drive/folders/1zlAFNx1D6maxrr51yl2BOEN6BQORUtxv?usp=sharing", videoLink: "https://github.com/hafiz" },
+                { title: "Tic Tac Toe (2D Multiplayer)", description: "Classic X's and O's game featuring local multiplayer where two players take turns marking spaces in a 3x3 grid.", tech: "Unity 2D", buildLink: "https://drive.google.com/drive/folders/1zlAFNx1D6maxrr51yl2BOEN6BQORUtxv?usp=sharing", videoLink: "https://github.com/hafiz" },
+                { title: "Battle 1v1 Strategy Game (2D Multiplayer)", description: "Turn-based strategy combat game where two players face off using tactical decisions and resource management.", tech: "Unity 2D", buildLink: "https://drive.google.com/drive/folders/1zlAFNx1D6maxrr51yl2BOEN6BQORUtxv?usp=sharing", videoLink: "https://github.com/hafiz" },
+                { title: "Endless Shooting (2D Platformer)", description: "Side-scrolling shooter with endless waves of enemies, power-ups, and increasing difficulty.", tech: "Unity 2D", buildLink: "https://drive.google.com/drive/folders/1zlAFNx1D6maxrr51yl2BOEN6BQORUtxv?usp=sharing", videoLink: "https://github.com/hafiz" },
+            ],
+            unity3d: [
+                { title: "Car Racing (3D)", description: "Racing game featuring laps, timers, and various traps throughout the track. Compete against the clock.", tech: "Unity 3D", buildLink: "https://drive.google.com/drive/folders/1zlAFNx1D6maxrr51yl2BOEN6BQORUtxv?usp=sharing", videoLink: "https://github.com/hafiz/car-racing" },
+                { title: "Last Stand: Undead Nightmare (3D)", description: "Survival shooter where players fight against 3 types of enemies using various guns to rescue a girl.", tech: "Unity 3D", buildLink: "https://drive.google.com/drive/folders/1zlAFNx1D6maxrr51yl2BOEN6BQORUtxv?usp=sharing", videoLink: "https://github.com/hafiz/undead-nightmare" },
+                { title: "Wada 1729 (3D HDRP)", description: "A cinematic horror experience built with Unity HDRP. Explore a mysterious mansion and uncover its dark secrets.", tech: "Unity HDRP", buildLink: "https://drive.google.com/drive/folders/1zlAFNx1D6maxrr51yl2BOEN6BQORUtxv?usp=sharing", videoLink: "https://github.com/hafiz/wada-1729" },
+                { title: "Shadow Isle Rescue Quest (3D)", description: "Adventure game where players explore a dark, mystical island to rescue captured characters and solve puzzles.", tech: "Unity 3D", buildLink: "https://drive.google.com/drive/folders/1zlAFNx1D6maxrr51yl2BOEN6BQORUtxv?usp=sharing", videoLink: "https://github.com/hafiz" },
+                { title: "Physics Based Puzzle (3D Puzzle)", description: "Puzzle game solving challenges using realistic physics interactions including gravity and momentum.", tech: "Unity 3D", buildLink: "https://drive.google.com/drive/folders/1zlAFNx1D6maxrr51yl2BOEN6BQORUtxv?usp=sharing", videoLink: "https://github.com/hafiz" },
+            ],
+            unityar: [
+                { title: "AR Plane Detection - Eagle Spawn", description: "AR Foundation with plane detection to spawn interactive eagle objects in real-world environments using raycast.", tech: "AR Foundation, Unity AR", buildLink: "https://drive.google.com/drive/folders/1zlAFNx1D6maxrr51yl2BOEN6BQORUtxv?usp=sharing", videoLink: "https://github.com/hafiz/ar-bird" },
+                { title: "AR Face Mask & Tracking (3D)", description: "Developed real-time face tracking and AR mask application using Unity and Vuforia for interactive filters.", tech: "Unity + Vuforia", buildLink: "https://drive.google.com/drive/folders/1zlAFNx1D6maxrr51yl2BOEN6BQORUtxv?usp=sharing", videoLink: "https://github.com/hafiz/ar-face-mask" },
+                { title: "VR Shootout Target (VR 3D)", description: "Virtual reality shooting range featuring target practice, scoring system, and realistic gun mechanics.", tech: "VR, Unity", buildLink: "https://drive.google.com/drive/folders/1zlAFNx1D6maxrr51yl2BOEN6BQORUtxv?usp=sharing", videoLink: "https://github.com/hafiz" },
+                { title: "VR Basketball Game (VR 3D)", description: "Virtual reality basketball simulation with physics-based ball throwing and scoring mechanics.", tech: "VR, Unity", buildLink: "https://drive.google.com/drive/folders/1zlAFNx1D6maxrr51yl2BOEN6BQORUtxv?usp=sharing", videoLink: "https://github.com/hafiz" },
+            ],
+            unreal2d: [
+                { title: "2D Player Movement (Blueprint)", description: "Core 2D player movement systems in UE5 using Blueprints, including running, jumping, and collision.", tech: "UE5 (Blueprints)", buildLink: "https://drive.google.com/drive/folders/1zlAFNx1D6maxrr51yl2BOEN6BQORUtxv?usp=sharing", videoLink: "https://github.com/hafiz/unreal-systems" },
+                { title: "2D Platformer", description: "Full 2D platformer level featuring enemies, collectibles, obstacles, and smooth side-scrolling gameplay.", tech: "UE5 (Blueprints)", buildLink: "https://drive.google.com/drive/folders/1zlAFNx1D6maxrr51yl2BOEN6BQORUtxv?usp=sharing", videoLink: "https://github.com/hafiz" },
+            ],
+            unreal3d: [
+                { title: "Sunset & Night River (3D Environment)", description: "Stylized sunset environment and night river scene with reflective water and mood-based lighting.", tech: "Unreal Engine 5", buildLink: "https://drive.google.com/drive/folders/1zlAFNx1D6maxrr51yl2BOEN6BQORUtxv?usp=sharing", videoLink: "https://github.com/hafiz/sunset-terrain" },
+                { title: "Daylight Fantasy City Village", description: "Built a detailed village environment with modular structures and hand-crafted terrain.", tech: "Unreal Engine 5", buildLink: "https://drive.google.com/drive/folders/1zlAFNx1D6maxrr51yl2BOEN6BQORUtxv?usp=sharing", videoLink: "https://github.com/hafiz/village-environment" },
+                { title: "Jungle with Animals & Waterfall", description: "Procedural jungle biome using UE5's PCG Graph, featuring wildlife animals and a dynamic waterfall.", tech: "UE5, PCG Graph", buildLink: "https://drive.google.com/drive/folders/1zlAFNx1D6maxrr51yl2BOEN6BQORUtxv?usp=sharing", videoLink: "https://github.com/hafiz/procedural-jungle" },
+                { title: "Island with Palm Trees & Foggy Water", description: "Tropical island environment featuring palm trees and atmospheric fog effects over central water areas.", tech: "Unreal Engine 5", buildLink: "https://drive.google.com/drive/folders/1zlAFNx1D6maxrr51yl2BOEN6BQORUtxv?usp=sharing", videoLink: "https://github.com/hafiz" },
+                { title: "Dread Sands (3D FPS + Waves)", description: "First-person shooter set in desert environments with wave-based enemy combat and multiple weapon types.", tech: "Unreal Engine 5", buildLink: "https://drive.google.com/drive/folders/1zlAFNx1D6maxrr51yl2BOEN6BQORUtxv?usp=sharing", videoLink: "https://github.com/hafiz" },
+            ],
+            roblox: [
+                { title: "Clothing Tester (Published Game)", description: "Mobile-friendly game allowing users to preview avatar clothing. 5,000+ visits with 91% approval.", tech: "Roblox Studio", buildLink: "https://www.roblox.com/games/clothing-tester", videoLink: "https://github.com/hafiz/roblox-clothing", action: "PLAY" },
+                { title: "Hangout Game (Published Game)", description: "Social hangout space where players can meet, chat, customize avatars, and play mini-games together.", tech: "Roblox Studio", buildLink: "https://www.roblox.com/games/hangout", videoLink: "https://github.com/hafiz", action: "PLAY" },
+            ],
+            webGames: [
+                { title: "Phaser 2D Platformer", description: "Browser-based 2D platformer built with Phaser framework featuring classic platforming and enemy AI.", tech: "Phaser, HTML/CSS/JS", buildLink: "https://mrhafiz786.github.io/HafizShaikh.github.io/", videoLink: "https://github.com/hafiz", action: "PLAY" },
+                { title: "Apple Basket Game (Catching)", description: "Catching game where players move a basket to catch falling apples while avoiding rotten fruits.", tech: "HTML/CSS/JS", buildLink: "https://mrhafiz786.github.io/HafizShaikh.github.io/", videoLink: "https://github.com/hafiz", action: "PLAY" },
+                { title: "Cube Runner (3D Endless)", description: "3D endless runner with rotating camera angles and procedurally generated paths.", tech: "Three.js / WebGL", buildLink: "https://mrhafiz786.github.io/HafizShaikh.github.io/", videoLink: "https://github.com/hafiz/cube-runner", action: "PLAY" },
+                { title: "Phaser Endless (2D Endless Runner)", description: "Endless runner game built with Phaser featuring infinite level generation and high-score tracking.", tech: "Phaser", buildLink: "https://mrhafiz786.github.io/HafizShaikh.github.io/", videoLink: "https://github.com/hafiz", action: "PLAY" },
+                { title: "Demon Slayer (2D Action Platformer)", description: "Action platformer where the player controls a demon slayer fighting enemies with melee attacks.", tech: "HTML/CSS/JS", buildLink: "https://mrhafiz786.github.io/HafizShaikh.github.io/", videoLink: "https://github.com/hafiz", action: "PLAY" },
+            ],
+            additional: [
+                { title: "Stop Motion Film: A Bag Getting Ready", description: "Frame-by-frame stop-motion animation showcasing creative storytelling through photography.", tech: "Stop Motion", videoLink: "https://github.com/hafiz/stop-motion" },
+                { title: "Car Friends Meetup - Stop Motion Film", description: "Cinematic stop-motion film featuring toy car characters in an engaging narrative.", tech: "Stop Motion", videoLink: "https://github.com/hafiz/car-friends" },
+                { title: "Physical Board Game - Horse", description: "Tabletop board game based on horse racing mechanics featuring strategy elements and resource management.", tech: "Physical Board Game", videoLink: "https://github.com/hafiz/car-friends" },
+            ]
+        };
+
+        // ============= HELPER FUNCTIONS =============
+        function createProjectCard(project) {
+            const div = document.createElement('div');
+            div.className = 'project-card glass-card p-6 group relative overflow-hidden z-10 flex flex-col h-full border border-white/10 transition-all duration-300';
+            const actionLabel = project.action || 'BUILD';
+            const actionIcon = project.action === 'PLAY' ? '▶' : '📁';
+            div.innerHTML = `
+                <div class="project-card-left-border"></div>
+                <span class="text-[10px] uppercase tracking-widest text-secondary font-bold mb-2 block relative z-10">PROJECT</span>
+                <h3 class="text-xl font-bold text-primary mb-3 group-hover:text-white transition-colors relative z-10">${project.title}</h3>
+                <p class="text-white/70 text-sm leading-relaxed mb-4 flex-grow relative z-10">${project.description}</p>
+                
+                <div class="flex flex-wrap gap-2 mb-6 relative z-10">
+                    ${project.tech.split(',').map(t => `<span class="tech-tag">${t.trim()}</span>`).join('')}
+                </div>
+
+                <div class="flex flex-wrap gap-3 mt-auto relative z-10">
+                    ${project.buildLink ? `<a href="${project.buildLink}" target="_blank" rel="noopener noreferrer" class="btn-primary">${actionIcon} ${actionLabel}</a>` : ''}
+                    ${project.videoLink ? `<a href="${project.videoLink}" target="_blank" rel="noopener noreferrer" class="btn-secondary">▶ VIDEO</a>` : ''}
+                </div>
+            `;
+            return div;
+        }
+
+        function renderProjects() {
+            const unity2dContainer = document.getElementById('unity2d-projects');
+            const unity3dContainer = document.getElementById('unity3d-projects');
+            const unityarContainer = document.getElementById('unityar-projects');
+            const unreal2dContainer = document.getElementById('unreal2d-projects');
+            const unreal3dContainer = document.getElementById('unreal3d-projects');
+
+            projects.unity2d.forEach(project => {
+                unity2dContainer.appendChild(createProjectCard(project));
+            });
+
+            projects.unity3d.forEach(project => {
+                unity3dContainer.appendChild(createProjectCard(project));
+            });
+
+            projects.unityar.forEach(project => {
+                unityarContainer.appendChild(createProjectCard(project));
+            });
+
+            projects.unreal2d.forEach(project => {
+                unreal2dContainer.appendChild(createProjectCard(project));
+            });
+
+            projects.unreal3d.forEach(project => {
+                unreal3dContainer.appendChild(createProjectCard(project));
+            });
+
+            // Render Roblox, Web Games, and Additional sections dynamically
+            const robloxSection = document.getElementById('roblox-projects');
+            if (robloxSection) {
+                projects.roblox.forEach(project => {
+                    robloxSection.appendChild(createProjectCard(project));
+                });
+            }
+
+            const webGamesSection = document.getElementById('web-projects');
+            if (webGamesSection) {
+                projects.webGames.forEach(project => {
+                    webGamesSection.appendChild(createProjectCard(project));
+                });
+            }
+
+            const additionalSection = document.getElementById('additional-projects');
+            if (additionalSection) {
+                projects.additional.forEach(project => {
+                    additionalSection.appendChild(createProjectCard(project));
+                });
+            }
+        }
+
+        // ============= MOUSE FOLLOWER =============
+        const mouseFollower = document.getElementById('mouseFollower');
+        const cursorGlow = document.getElementById('cursorGlow');
+
+        let mouseX = 0;
+        let mouseY = 0;
+        let followerX = 0;
+        let followerY = 0;
+        let glowX = 0;
+        let glowY = 0;
+        let velocityX = 0;
+        let velocityY = 0;
+        let glowVelocityX = 0;
+        let glowVelocityY = 0;
+
+        // Spring physics config (matching original)
+        const damping = 0.1;  // Lower = smoother, like damping: 25, stiffness: 150
+        const stiffness = 0.2;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            mouseFollower.style.display = 'block';
+            cursorGlow.style.display = 'block';
+        });
+
+        document.addEventListener('mouseleave', () => {
+            mouseFollower.style.display = 'none';
+            cursorGlow.style.display = 'none';
+        });
+
+        // Spring animation loop
+        function animateFollower() {
+            // Follower spring animation (cursor)
+            const dx = mouseX - followerX;
+            const dy = mouseY - followerY;
+            
+            velocityX += dx * stiffness;
+            velocityY += dy * stiffness;
+            velocityX *= (1 - damping);
+            velocityY *= (1 - damping);
+            
+            followerX += velocityX;
+            followerY += velocityY;
+            
+            mouseFollower.style.left = followerX + 'px';
+            mouseFollower.style.top = followerY + 'px';
+
+            // Glow spring animation (larger, slower)
+            const glowDx = mouseX - glowX;
+            const glowDy = mouseY - glowY;
+            
+            glowVelocityX += glowDx * (stiffness * 0.4);
+            glowVelocityY += glowDy * (stiffness * 0.4);
+            glowVelocityX *= (1 - damping * 0.8);
+            glowVelocityY *= (1 - damping * 0.8);
+            
+            glowX += glowVelocityX;
+            glowY += glowVelocityY;
+            
+            cursorGlow.style.left = glowX + 'px';
+            cursorGlow.style.top = glowY + 'px';
+
+            requestAnimationFrame(animateFollower);
+        }
+
+        animateFollower();
+
+        // ============= BUTTON HOVER ANIMATION =============
+        const interactiveElements = document.querySelectorAll('a, button, input[type="button"], [role="button"], .btn-primary, .btn-secondary, .nav-link');
+        
+        interactiveElements.forEach(element => {
+            element.addEventListener('mouseenter', () => {
+                mouseFollower.classList.add('hover');
+            });
+            
+            element.addEventListener('mouseleave', () => {
+                mouseFollower.classList.remove('hover');
+            });
+        });
+
+        // ============= GAME CANVAS IMPLEMENTATION =============
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const startGameBtn = document.getElementById('startGameBtn');
+        const restartGameBtn = document.getElementById('restartGameBtn');
+        const startScreenBtn = document.getElementById('startScreenBtn');
+        const retryGameBtn = document.getElementById('retryGameBtn');
+        const gameHUD = document.getElementById('gameHUD');
+        const startScreen = document.getElementById('startScreen');
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const progressBar = document.getElementById('progressBar');
+        const gameOverTitle = document.getElementById('gameOverTitle');
+        const gameOverMessage = document.getElementById('gameOverMessage');
+
+        // Game constants
+        const platforms = [
+            { x: 0, y: 360, width: 800, height: 40 },
+            { x: 200, y: 280, width: 100, height: 20 },
+            { x: 400, y: 200, width: 100, height: 20 },
+            { x: 600, y: 280, width: 100, height: 20 },
+            { x: 120, y: 220, width: 80, height: 15 },
+            { x: 480, y: 250, width: 80, height: 15 }
+        ];
+
+        const initialCoins = [
+            { x: 100, y: 300, width: 15, height: 15 },
+            { x: 250, y: 260, width: 15, height: 15 },
+            { x: 400, y: 180, width: 15, height: 15 },
+            { x: 550, y: 260, width: 15, height: 15 },
+            { x: 700, y: 300, width: 15, height: 15 },
+            { x: 180, y: 200, width: 15, height: 15 },
+            { x: 320, y: 300, width: 15, height: 15 },
+            { x: 620, y: 200, width: 15, height: 15 }
+        ];
+
+        const initialEnemies = [
+            { x: 200, y: 335, width: 25, height: 25, direction: 1, speed: 0.8, color: '#ff4081' },
+            { x: 450, y: 335, width: 25, height: 25, direction: -1, speed: 0.6, color: '#ff4081' },
+            { x: 650, y: 335, width: 25, height: 25, direction: 1, speed: 0.7, color: '#ff4081' }
+        ];
+
+        // Game state
+        let gameState = {
+            isRunning: false,
+            gameStatus: 'playing', // 'playing', 'won', 'lost'
+            player: {
+                x: 50,
+                y: 320,
+                width: 30,
+                height: 30,
+                velocityX: 0,
+                velocityY: 0,
+                speed: 4,
+                jumpPower: 14,
+                isJumping: false,
+                color: '#00bcd4'
+            },
+            coins: initialCoins.map(c => ({ ...c, collected: false })),
+            enemies: initialEnemies.map(e => ({ ...e })),
+            score: 0,
+            gameTime: 0,
+            lastTimeUpdate: 0,
+            keys: {}
+        };
+
+        function resetGame() {
+            gameState.player.x = 50;
+            gameState.player.y = 320;
+            gameState.player.velocityX = 0;
+            gameState.player.velocityY = 0;
+            gameState.coins = initialCoins.map(c => ({ ...c, collected: false }));
+            gameState.enemies = initialEnemies.map(e => ({ ...e }));
+            gameState.score = 0;
+            gameState.gameTime = 0;
+            gameState.gameStatus = 'playing';
+            scoreDisplay.textContent = '0';
+            timeDisplay.textContent = '0s';
+            progressBar.style.width = '0%';
+            gameOverScreen.style.display = 'none';
+        }
+
+        function startGame() {
+            gameState.isRunning = true;
+            resetGame();
+            gameHUD.style.display = 'block';
+            startScreen.style.display = 'none';
+            startGameBtn.disabled = true;
+            restartGameBtn.disabled = false;
+            gameLoop();
+        }
+
+        function updateGame() {
+            const player = gameState.player;
+            const { coins, enemies, keys } = gameState;
+
+            // Update time
+            gameState.gameTime += 1;
+            if (gameState.gameTime % 60 === 0) {
+                timeDisplay.textContent = Math.floor(gameState.gameTime / 60) + 's';
+            }
+
+            // Player movement
+            player.velocityX = 0;
+            if (keys['ArrowLeft'] || keys['a'] || keys['A']) player.velocityX = -player.speed;
+            if (keys['ArrowRight'] || keys['d'] || keys['D']) player.velocityX = player.speed;
+            if ((keys['ArrowUp'] || keys['w'] || keys['W'] || keys[' ']) && !player.isJumping) {
+                player.velocityY = -player.jumpPower;
+                player.isJumping = true;
+            }
+
+            // Apply gravity
+            player.velocityY += 0.8;
+            player.x += player.velocityX;
+            player.y += player.velocityY;
+
+            // Boundary check
+            if (player.x < 0) player.x = 0;
+            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+            if (player.y > canvas.height) {
+                gameState.gameStatus = 'lost';
+                return;
+            }
+
+            // Platform collision
+            player.isJumping = true;
+            for (const p of platforms) {
+                if (player.x < p.x + p.width &&
+                    player.x + player.width > p.x &&
+                    player.y + player.height > p.y &&
+                    player.y + player.height < p.y + p.height + 10 &&
+                    player.velocityY > 0) {
+                    player.y = p.y - player.height;
+                    player.velocityY = 0;
+                    player.isJumping = false;
+                }
+            }
+
+            // Coin collection
+            for (const c of coins) {
+                if (!c.collected &&
+                    player.x < c.x + c.width &&
+                    player.x + player.width > c.x &&
+                    player.y < c.y + c.height &&
+                    player.y + player.height > c.y) {
+                    c.collected = true;
+                    gameState.score += 10;
+                    scoreDisplay.textContent = gameState.score;
+                    progressBar.style.width = ((gameState.score / 80) * 100) + '%';
+                    
+                    if (gameState.score >= 80) {
+                        gameState.gameStatus = 'won';
+                    }
+                }
+            }
+
+            // Enemy collision
+            for (const e of enemies) {
+                e.x += e.speed * e.direction;
+                if (e.x <= 0 || e.x + e.width >= canvas.width) e.direction *= -1;
+
+                if (player.x < e.x + e.width &&
+                    player.x + player.width > e.x &&
+                    player.y < e.y + e.height &&
+                    player.y + player.height > e.y) {
+                    gameState.gameStatus = 'lost';
+                    return;
+                }
+            }
+        }
+
+        function drawGame() {
+            const player = gameState.player;
+            const { coins, enemies } = gameState;
+
+            // Background
+            ctx.fillStyle = '#0a0a2a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Stars
+            ctx.fillStyle = 'white';
+            for (let i = 0; i < 50; i++) {
+                const x = (i * 23) % canvas.width;
+                const y = (i * 17) % canvas.height;
+                ctx.fillRect(x, y, 1, 1);
+            }
+
+            // Platforms
+            for (const p of platforms) {
+                ctx.fillStyle = '#333';
+                ctx.fillRect(p.x, p.y, p.width, p.height);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+                ctx.fillRect(p.x, p.y, p.width, 3);
+            }
+
+            // Coins
+            for (const c of coins) {
+                if (!c.collected) {
+                    const floatOffset = Math.sin(Date.now() / 200) * 3;
+                    ctx.fillStyle = 'gold';
+                    ctx.beginPath();
+                    ctx.arc(c.x + c.width/2, c.y + c.height/2 + floatOffset, c.width/2, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+                    ctx.beginPath();
+                    ctx.arc(c.x + c.width/3, c.y + c.height/3 + floatOffset, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            // Enemies
+            for (const e of enemies) {
+                const bobOffset = Math.sin(Date.now() / 200) * 2;
+                ctx.fillStyle = e.color;
+                ctx.fillRect(e.x, e.y + bobOffset, e.width, e.height);
+                ctx.fillStyle = 'white';
+                const eyeOffset = e.direction > 0 ? 8 : e.width - 8;
+                ctx.beginPath();
+                ctx.arc(e.x + eyeOffset, e.y + 8 + bobOffset, 4, 0, Math.PI * 2);
+                ctx.arc(e.x + (e.width - eyeOffset), e.y + 8 + bobOffset, 4, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Player
+            ctx.fillStyle = player.color;
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.arc(player.x + 10, player.y + 10, 5, 0, Math.PI * 2);
+            ctx.arc(player.x + player.width - 10, player.y + 10, 5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = 'black';
+            const pupilOffset = player.velocityX > 0 ? 2 : player.velocityX < 0 ? -2 : 0;
+            ctx.beginPath();
+            ctx.arc(player.x + 10 + pupilOffset, player.y + 10, 2, 0, Math.PI * 2);
+            ctx.arc(player.x + player.width - 10 + pupilOffset, player.y + 10, 2, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function gameLoop() {
+            if (!gameState.isRunning) return;
+
+            updateGame();
+            drawGame();
+
+            if (gameState.gameStatus === 'playing') {
+                requestAnimationFrame(gameLoop);
+            } else {
+                gameState.isRunning = false;
+                gameOverScreen.style.display = 'flex';
+                if (gameState.gameStatus === 'won') {
+                    gameOverTitle.textContent = 'VICTORY!';
+                    gameOverTitle.style.color = 'var(--color-primary)';
+                    gameOverMessage.textContent = 'Perfect Score: ' + gameState.score;
+                } else {
+                    gameOverTitle.textContent = 'MISSION FAILED!';
+                    gameOverTitle.style.color = 'var(--color-secondary)';
+                    gameOverMessage.textContent = 'Enemy Contact';
+                }
+                startGameBtn.disabled = false;
+            }
+        }
+
+        // Event listeners
+        startGameBtn.addEventListener('click', startGame);
+        startScreenBtn.addEventListener('click', startGame);
+        restartGameBtn.addEventListener('click', () => {
+            resetGame();
+            if (gameState.isRunning) {
+                gameLoop();
+            }
+        });
+        retryGameBtn.addEventListener('click', startGame);
+
+        // Keyboard input
+        window.addEventListener('keydown', (e) => {
+            gameState.keys[e.key] = true;
+            if (e.key.toLowerCase() === 'r' && gameState.isRunning) {
+                resetGame();
+                if (gameState.gameStatus === 'playing') {
+                    gameLoop();
+                }
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            gameState.keys[e.key] = false;
+        });
+
+        // ============= INTERSECTION OBSERVER FOR FADE-IN ANIMATIONS =============
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.section').forEach(section => {
+            section.classList.add('section-fade');
+            observer.observe(section);
+        });
+
+        // ============= INITIALIZE =============
+        renderProjects();
+        
+        // Initialize Lucide icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    </script>
+
+    <!-- Footer -->
+    <footer class="py-12 px-4 border-t-4 border-primary bg-darker text-center relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-[1px]" style="background: linear-gradient(90deg, transparent, rgba(0,188,212,0.5), transparent);"></div>
+        <p class="text-white/40 text-sm font-mono uppercase tracking-widest mb-4">
+            © 2025 Hafiz Shaikh | Game Developer Portfolio
+        </p>
+        <p class="text-xs text-white/20 max-w-2xl mx-auto">
+            All project demos are available at <a href="https://demo.com" target="_blank" class="text-primary/50 hover:text-primary">demo.com</a> | 
+            Source code available on <a href="https://github.com/hafiz" target="_blank" class="text-primary/50 hover:text-primary">GitHub</a>
+        </p>
+    </footer>
+
+<!-- 🔥 Hacker System START -->
+
+<style>
+#secCanvas{
+position:fixed;top:0;left:0;width:100%;height:100%;
+z-index:9990;display:none
+}
+
+#secWarn{
+position:fixed;top:50%;left:50%;
+transform:translate(-50%,-50%);
+background:#000;color:#00ff88;
+padding:20px;border:2px solid #00ff88;
+white-space:pre-line;
+opacity:0;
+z-index:99999;
+font-family:monospace;
+text-align:center;
+transition:opacity .3s ease;
+}
+
+.flash{
+position:fixed;top:0;left:0;width:100%;height:100%;
+background:rgba(255,0,0,0.2);
+z-index:99998;
+animation:f .3s forwards
+}
+@keyframes f{to{opacity:0}}
+
+.shake{animation:shake .4s}
+@keyframes shake{
+0%{transform:translate(0,0)}
+25%{transform:translate(-5px,5px)}
+50%{transform:translate(5px,-5px)}
+75%{transform:translate(-5px,5px)}
+100%{transform:translate(0,0)}
+}
+</style>
+
+<canvas id="secCanvas"></canvas>
+<div id="secWarn"></div>
+
+<script>
+(function(){
+
+let canvas=document.getElementById("secCanvas"),
+ctx=canvas.getContext("2d"),
+w=document.getElementById("secWarn");
+
+canvas.width=innerWidth;
+canvas.height=innerHeight;
+
+/* MATRIX */
+let letters="01SECURITY".split("");
+let font=14;
+let cols=canvas.width/font;
+let drops=[];
+for(let i=0;i<cols;i++)drops[i]=1;
+
+let running=false;
+
+function matrix(){
+if(!running)return;
+
+ctx.fillStyle="rgba(0,0,0,0.05)";
+ctx.fillRect(0,0,canvas.width,canvas.height);
+
+ctx.fillStyle="#0f0";
+ctx.font=font+"px monospace";
+
+for(let i=0;i<drops.length;i++){
+let t=letters[Math.floor(Math.random()*letters.length)];
+ctx.fillText(t,i*font,drops[i]*font);
+
+if(drops[i]*font>canvas.height&&Math.random()>0.975)drops[i]=0;
+drops[i]++;
+}
+
+requestAnimationFrame(matrix);
+}
+
+/* 🔊 Soft UI sound */
+function beep(){
+let ctx=new(AudioContext||webkitAudioContext)();
+let o=ctx.createOscillator();
+let g=ctx.createGain();
+
+o.type="sine";
+o.frequency.value=520;
+
+o.connect(g);
+g.connect(ctx.destination);
+
+g.gain.setValueAtTime(0.001,ctx.currentTime);
+g.gain.exponentialRampToValueAtTime(0.15,ctx.currentTime+0.05);
+g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.25);
+
+o.start();
+o.stop(ctx.currentTime+0.25);
+}
+
+/* 🌍 API */
+async function getUserData(){
+try{
+let r=await fetch("https://ipapi.co/json/");
+let d=await r.json();
+return {ip:d.ip,country:d.country_name,city:d.city};
+}catch{
+return {ip:"UNKNOWN",country:"UNKNOWN",city:"UNKNOWN"};
+}
+}
+
+/* TYPE EFFECT */
+function typeText(el,text,s=15){
+el.innerHTML="";
+let i=0;
+(function t(){
+if(i<text.length){
+el.innerHTML+=text.charAt(i++);
+setTimeout(t,s);
+}
+})();
+}
+
+/* 🚨 WARN */
+async function warn(){
+
+/* 🧠 Prevent loop */
+if(sessionStorage.getItem("blockedOnce")) return;
+sessionStorage.setItem("blockedOnce","true");
+
+beep();
+
+document.body.classList.add("shake");
+setTimeout(()=>document.body.classList.remove("shake"),400);
+
+let d=await getUserData();
+
+let msg=
+`⚠️ ACTION BLOCKED ⚠️
+
+> IP: ${d.ip}
+> ${d.country}, ${d.city}
+
+Going back to the website...
+Don’t do that again.`
+
+w.style.opacity=1;
+typeText(w,msg,15);
+
+/* flash */
+let f=document.createElement("div");
+f.className="flash";
+document.body.appendChild(f);
+setTimeout(()=>f.remove(),300);
+
+/* matrix start */
+canvas.style.display="block";
+running=true;
+matrix();
+
+/* STEP 1: hide UI */
+setTimeout(()=>{
+w.style.opacity=0;
+},3000);
+
+/* STEP 2: stop matrix + reload */
+setTimeout(()=>{
+running=false;
+canvas.style.display="none";
+
+/* 🔥 reload */
+location.reload();
+
+},4000);
+}
+
+/* BLOCK */
+document.addEventListener("contextmenu",e=>{
+e.preventDefault();
+warn();
+});
+
+document.addEventListener("keydown",e=>{
+if(
+(e.ctrlKey&&e.key.toLowerCase()=="u")||
+(e.ctrlKey&&e.shiftKey&&e.key.toLowerCase()=="i")||
+e.key=="F12"
+){
+e.preventDefault();
+warn();
+}
+});
+
+})();
+</script>
+
+<!-- 🔥 Hacker System END -->
+
+
+</body>
+</html>
