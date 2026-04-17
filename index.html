@@ -1409,5 +1409,205 @@
             });
         });
     </script>
+
+    
+    <!-- 🔥 Hacker System START -->
+
+<style>
+#secCanvas{
+position:fixed;top:0;left:0;width:100%;height:100%;
+z-index:9990;display:none
+}
+
+#secWarn{
+position:fixed;top:50%;left:50%;
+transform:translate(-50%,-50%);
+background:#000;color:#00ff88;
+padding:20px;border:2px solid #00ff88;
+white-space:pre-line;
+opacity:0;
+z-index:99999;
+font-family:monospace;
+text-align:center;
+transition:opacity .3s ease;
+}
+
+.flash{
+position:fixed;top:0;left:0;width:100%;height:100%;
+background:rgba(255,0,0,0.2);
+z-index:99998;
+animation:f .3s forwards
+}
+@keyframes f{to{opacity:0}}
+
+.shake{animation:shake .4s}
+@keyframes shake{
+0%{transform:translate(0,0)}
+25%{transform:translate(-5px,5px)}
+50%{transform:translate(5px,-5px)}
+75%{transform:translate(-5px,5px)}
+100%{transform:translate(0,0)}
+}
+</style>
+
+<canvas id="secCanvas"></canvas>
+<div id="secWarn"></div>
+
+<script>
+(function(){
+
+let canvas=document.getElementById("secCanvas"),
+ctx=canvas.getContext("2d"),
+w=document.getElementById("secWarn");
+
+canvas.width=innerWidth;
+canvas.height=innerHeight;
+
+/* MATRIX */
+let letters="01SECURITY".split("");
+let font=14;
+let cols=canvas.width/font;
+let drops=[];
+for(let i=0;i<cols;i++)drops[i]=1;
+
+let running=false;
+
+function matrix(){
+if(!running)return;
+
+ctx.fillStyle="rgba(0,0,0,0.05)";
+ctx.fillRect(0,0,canvas.width,canvas.height);
+
+ctx.fillStyle="#0f0";
+ctx.font=font+"px monospace";
+
+for(let i=0;i<drops.length;i++){
+let t=letters[Math.floor(Math.random()*letters.length)];
+ctx.fillText(t,i*font,drops[i]*font);
+
+if(drops[i]*font>canvas.height&&Math.random()>0.975)drops[i]=0;
+drops[i]++;
+}
+
+requestAnimationFrame(matrix);
+}
+
+/* 🔊 Soft UI sound */
+function beep(){
+let ctx=new(AudioContext||webkitAudioContext)();
+let o=ctx.createOscillator();
+let g=ctx.createGain();
+
+o.type="sine";
+o.frequency.value=520;
+
+o.connect(g);
+g.connect(ctx.destination);
+
+g.gain.setValueAtTime(0.001,ctx.currentTime);
+g.gain.exponentialRampToValueAtTime(0.15,ctx.currentTime+0.05);
+g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.25);
+
+o.start();
+o.stop(ctx.currentTime+0.25);
+}
+
+/* 🌍 API */
+async function getUserData(){
+try{
+let r=await fetch("https://ipapi.co/json/");
+let d=await r.json();
+return {ip:d.ip,country:d.country_name,city:d.city};
+}catch{
+return {ip:"UNKNOWN",country:"UNKNOWN",city:"UNKNOWN"};
+}
+}
+
+/* TYPE EFFECT */
+function typeText(el,text,s=15){
+el.innerHTML="";
+let i=0;
+(function t(){
+if(i<text.length){
+el.innerHTML+=text.charAt(i++);
+setTimeout(t,s);
+}
+})();
+}
+
+/* 🚨 WARN */
+async function warn(){
+
+/* 🧠 Prevent loop */
+if(sessionStorage.getItem("blockedOnce")) return;
+sessionStorage.setItem("blockedOnce","true");
+
+beep();
+
+document.body.classList.add("shake");
+setTimeout(()=>document.body.classList.remove("shake"),400);
+
+let d=await getUserData();
+
+let msg=
+`⚠️ ACTION BLOCKED ⚠️
+
+> IP: ${d.ip}
+> ${d.country}, ${d.city}
+
+Going back to the website...
+Don’t do that again.`
+
+w.style.opacity=1;
+typeText(w,msg,15);
+
+/* flash */
+let f=document.createElement("div");
+f.className="flash";
+document.body.appendChild(f);
+setTimeout(()=>f.remove(),300);
+
+/* matrix start */
+canvas.style.display="block";
+running=true;
+matrix();
+
+/* STEP 1: hide UI */
+setTimeout(()=>{
+w.style.opacity=0;
+},3000);
+
+/* STEP 2: stop matrix + reload */
+setTimeout(()=>{
+running=false;
+canvas.style.display="none";
+
+/* 🔥 reload */
+location.reload();
+
+},4000);
+}
+
+/* BLOCK */
+document.addEventListener("contextmenu",e=>{
+e.preventDefault();
+warn();
+});
+
+document.addEventListener("keydown",e=>{
+if(
+(e.ctrlKey&&e.key.toLowerCase()=="u")||
+(e.ctrlKey&&e.shiftKey&&e.key.toLowerCase()=="i")||
+e.key=="F12"
+){
+e.preventDefault();
+warn();
+}
+});
+
+})();
+</script>
+
+<!-- 🔥 Hacker System END -->
 </body>
 </html>
