@@ -402,6 +402,39 @@
             color: var(--color-secondary);
             font-weight: 600;
         }
+
+        /* Video Modal Enhancements */
+        .video-modal-overlay {
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .video-modal-content {
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 188, 212, 0.25),
+                0 0 0 1px rgba(255, 255, 255, 0.05);
+        }
+
+        .video-modal-header {
+            background: linear-gradient(135deg, rgba(15, 15, 15, 0.8) 0%, rgba(0, 188, 212, 0.1) 100%);
+        }
+
+        .video-loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive video modal */
+        @media (max-width: 768px) {
+            .video-modal-content {
+                margin: 1rem;
+                max-width: calc(100vw - 2rem);
+            }
+        }
     </style>
 </head>
 <body class="min-h-screen bg-darker selection:bg-primary/30 relative overflow-x-hidden">
@@ -425,7 +458,7 @@
         <div class="relative z-10 animate-fadeInUp" style="animation: fadeInUp 0.8s ease-out;">
             <h1 class="text-5xl md:text-7xl font-bold text-primary mb-4" style="text-shadow: 0 0 30px rgba(0, 188, 212, 0.4); letter-spacing: -0.02em; font-family: 'Space Grotesk', sans-serif;">HAFIZ SHAIKH</h1>
             <p class="text-lg md:text-xl text-white/80 font-display uppercase tracking-[0.2em] mb-8">
-                <i data-lucide="gamepad-2" style="width: 18px; height: 18px; display: inline; color: #ff4081; margin-right: 6px;"></i> Game Developer | Unity | Unreal Engine | Roblox
+                <i data-lucide="gamepad-2" style="width: 18px; height: 18px; display: inline; color: #ff4081; margin-right: 6px;"></i> Game Developer | Unity | Unreal Engine | AR/VR
             </p>
             
             <div class="flex flex-wrap justify-center gap-4 md:gap-6 text-sm text-white/60">
@@ -439,7 +472,7 @@
                     <i data-lucide="share-2" style="width: 14px; height: 14px; color: #4caf50;"></i> LinkedIn
                 </a>
                 <a href="https://bold.pro/my/hafiz-shaikh/567r" target="_blank" class="flex items-center gap-2 hover:text-primary transition-colors">
-                    <i data-lucide="globe" style="width: 14px; height: 14px; color: #00bcd4;"></i> Resume
+                    <i data-lucide="globe" style="width: 14px; height: 14px; color: #00bcd4;"></i> Portfolio
                 </a>
                 <span class="flex items-center gap-2">
                     <i data-lucide="map-pin" style="width: 14px; height: 14px; color: #ff4081;"></i> Mumbai, India
@@ -806,7 +839,7 @@
                         </p>
                         <p class="flex items-center gap-3 text-white/80">
                             <i data-lucide="globe" class="text-primary" style="width: 18px; height: 18px; flex-shrink: 0;"></i>
-                            <a href="https://mrhafiz786.github.io/HafizShaikh.github.io/" target="_blank" class="hover:text-primary transition-colors">Resume</a>
+                            <a href="https://mrhafiz786.github.io/HafizShaikh.github.io/" target="_blank" class="hover:text-primary transition-colors">Portfolio Site</a>
                         </p>
                         <p class="flex items-center gap-3 text-white/80">
                             <i data-lucide="code" class="text-primary" style="width: 18px; height: 18px; flex-shrink: 0;"></i>
@@ -877,12 +910,179 @@
             ]
         };
 
-        // ============= HELPER FUNCTIONS =============
+        // ============= VIDEO MODAL FUNCTIONALITY =============
+        function createVideoModal(url, title = 'Project Video') {
+            // Create modal overlay
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 z-[100] flex items-center justify-center p-4 bg-darker/95 backdrop-blur-md video-modal-overlay';
+            modal.style.opacity = '0';
+            modal.style.transition = 'opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+            modal.style.zIndex = '100';
+            modal.style.cursor = 'default';
+
+            // Create modal content container
+            const modalContent = document.createElement('div');
+            modalContent.className = 'relative w-full max-w-6xl glass-card border-2 border-primary/30 overflow-hidden shadow-2xl video-modal-content';
+            modalContent.style.transform = 'scale(0.9) translateY(20px)';
+            modalContent.style.opacity = '0';
+            modalContent.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+            modalContent.style.maxHeight = '90vh';
+            modalContent.style.cursor = 'default';
+
+            // Create header with title and close button
+            const header = document.createElement('div');
+            header.className = 'flex items-center justify-between p-6 border-b border-white/10 bg-darker/50 video-modal-header';
+            
+            const titleElement = document.createElement('h3');
+            titleElement.className = 'text-xl font-bold text-primary';
+            titleElement.textContent = title;
+            
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'p-2 bg-darker/80 text-white rounded-full hover:bg-primary/20 transition-all duration-300 hover:scale-110 shadow-lg border border-white/10';
+            closeBtn.innerHTML = '✕';
+            closeBtn.style.fontSize = '20px';
+            closeBtn.style.lineHeight = '1';
+            
+            header.appendChild(titleElement);
+            header.appendChild(closeBtn);
+
+            // Create loading overlay
+            const loadingOverlay = document.createElement('div');
+            loadingOverlay.className = 'absolute inset-0 flex items-center justify-center bg-darker/80 backdrop-blur-sm z-10';
+            loadingOverlay.style.display = 'flex';
+            
+            const loadingSpinner = document.createElement('div');
+            loadingSpinner.className = 'flex flex-col items-center gap-4';
+            loadingSpinner.innerHTML = `
+                <div class="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full video-loading-spinner"></div>
+                <p class="text-white/70 text-sm font-mono">Loading video...</p>
+            `;
+            
+            loadingOverlay.appendChild(loadingSpinner);
+
+            // Create iframe container
+            const iframeContainer = document.createElement('div');
+            iframeContainer.className = 'relative bg-black';
+            iframeContainer.style.aspectRatio = '16/9';
+            
+            // Create iframe
+            const iframe = document.createElement('iframe');
+            iframe.className = 'w-full h-full border-0';
+            iframe.allow = 'autoplay; encrypted-media; fullscreen; picture-in-picture';
+            iframe.allowFullscreen = true;
+            iframe.title = title + ' - Video Player';
+            iframe.loading = 'lazy';
+            
+            // Convert Google Drive links to embeddable format
+            let embedUrl = url;
+            if (url.includes('drive.google.com')) {
+                if (url.includes('/file/d/')) {
+                    const fileId = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/)?.[1];
+                    if (fileId) {
+                        embedUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+                    }
+                } else if (url.includes('/folders/')) {
+                    embedUrl = url.replace('/folders/', '/drive/folders/');
+                }
+            }
+            iframe.src = embedUrl;
+
+            // Handle iframe load
+            iframe.onload = () => {
+                setTimeout(() => {
+                    loadingOverlay.style.display = 'none';
+                }, 500);
+            };
+
+            // Handle iframe error
+            iframe.onerror = () => {
+                loadingOverlay.innerHTML = `
+                    <div class="flex flex-col items-center gap-4 p-8">
+                        <div class="text-red-400 text-4xl">⚠️</div>
+                        <p class="text-white/70 text-center">Failed to load video</p>
+                        <p class="text-white/40 text-sm text-center">The video may be private or unavailable</p>
+                        <a href="${url}" target="_blank" class="px-4 py-2 bg-primary text-darker rounded hover:bg-primary/80 transition-colors text-sm font-bold">
+                            Open in New Tab
+                        </a>
+                    </div>
+                `;
+            };
+
+            iframeContainer.appendChild(loadingOverlay);
+            iframeContainer.appendChild(iframe);
+
+            // Assemble modal
+            modalContent.appendChild(header);
+            modalContent.appendChild(iframeContainer);
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+
+            // Animate in
+            setTimeout(() => {
+                modal.style.opacity = '1';
+                modalContent.style.transform = 'scale(1) translateY(0)';
+                modalContent.style.opacity = '1';
+            }, 10);
+
+            // Prevent body scroll when modal is open and show normal cursor
+            const originalOverflow = document.body.style.overflow;
+            const originalCursor = document.body.style.cursor;
+            document.body.style.overflow = 'hidden';
+            document.body.style.cursor = 'default';
+            
+            // Hide mouse follower in modal
+            const mouseFollower = document.getElementById('mouseFollower');
+            const cursorGlow = document.getElementById('cursorGlow');
+            if (mouseFollower) mouseFollower.style.display = 'none';
+            if (cursorGlow) cursorGlow.style.display = 'none';
+            
+            // Restore body scroll and cursor when modal closes
+            function restoreBodyState() {
+                document.body.style.overflow = originalOverflow;
+                document.body.style.cursor = originalCursor;
+                if (mouseFollower) mouseFollower.style.display = 'block';
+                if (cursorGlow) cursorGlow.style.display = 'block';
+            }
+
+            // Close modal function
+            function closeModal() {
+                modal.style.opacity = '0';
+                modalContent.style.transform = 'scale(0.9) translateY(20px)';
+                modalContent.style.opacity = '0';
+                
+                // Restore body state immediately
+                restoreBodyState();
+                
+                setTimeout(() => {
+                    if (document.body.contains(modal)) {
+                        document.body.removeChild(modal);
+                    }
+                }, 400);
+            }
+
+            // Event listeners
+            closeBtn.onclick = closeModal;
+            modal.onclick = (e) => {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            };
+
+            // Keyboard navigation
+            document.addEventListener('keydown', function escHandler(e) {
+                if (e.key === 'Escape') {
+                    closeModal();
+                    document.removeEventListener('keydown', escHandler);
+                }
+            });
+        }
+
+        // Update project card creation to include video modal
         function createProjectCard(project) {
             const div = document.createElement('div');
             div.className = 'project-card glass-card p-6 group relative overflow-hidden z-10 flex flex-col h-full border border-white/10 transition-all duration-300';
             const actionLabel = project.action || 'BUILD';
-            const actionIcon = project.action === 'PLAY' ? '▶' : '📁';
+            const actionIcon = project.action === 'PLAY' ? '▶️' : '📁';
             div.innerHTML = `
                 <div class="project-card-left-border"></div>
                 <span class="text-[10px] uppercase tracking-widest text-secondary font-bold mb-2 block relative z-10">PROJECT</span>
@@ -895,9 +1095,16 @@
 
                 <div class="flex flex-wrap gap-3 mt-auto relative z-10">
                     ${project.buildLink ? `<a href="${project.buildLink}" target="_blank" rel="noopener noreferrer" class="btn-primary">${actionIcon} ${actionLabel}</a>` : ''}
-                    ${project.videoLink ? `<a href="${project.videoLink}" target="_blank" rel="noopener noreferrer" class="btn-secondary">▶ VIDEO</a>` : ''}
+                    ${project.videoLink ? `<button class="btn-secondary video-btn" data-video="${project.videoLink}">▶️ VIDEO</button>` : ''}
                 </div>
             `;
+            
+            // Add video button event listener
+            if (project.videoLink) {
+                const videoBtn = div.querySelector('.video-btn');
+                videoBtn.onclick = () => createVideoModal(project.videoLink, project.title);
+            }
+            
             return div;
         }
 
@@ -1361,6 +1568,9 @@
             Source code available on <a href="https://github.com/hafiz" target="_blank" class="text-primary/50 hover:text-primary">GitHub</a>
         </p>
     </footer>
+</body>
+</html>
+
 
 <!-- 🔥 Hacker System START -->
 
